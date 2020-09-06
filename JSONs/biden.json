@@ -1,0 +1,44 @@
+// Title: Biden campaign 2020 proposed tax reforms
+// Reform_File_Author: Cody Kallen
+// Reform_Reference: 
+// Reform_Baseline: current_law_policy.json
+// Reform_Description:
+// - Reset pre-TCJA rates and brackets above $400k (0)
+// - Phase out itemize deductions for income over $400k (1)
+// - Cap itemized deductions at 28 percent of value (2)
+// - Phase out QBI over $400k (3)
+// - Add fourth capital gains bracket over $1 million at 39.6 percnet (4)
+// - Extend the EITC to those over age 65 (5) (EITC_MaxEligAge = 125)
+// - Apply the 12.4 percent OASDI payroll tax to earnings above $400k (6)
+// Provisions not modeled:
+// - Tax unrealized capital gains at death
+// - Increase tax preferences for middle-income taxpayers' contributions to 401(k) and IRA accounts
+// - Restore the electric vehicle tax credit and target to to middle-income consumers.
+// - $5000 tax credit for family caregivers of people with cognitive and physical needs.
+// - Exclude student loan foregiveness from taxable income.
+// - Reinstate solar investment tax credit and tax credits for residential energy efficiency.
+// Reform_Parameter_Map:
+// - 0: II_rt*, II_brk*, PT_rt*, PT_brk*
+// - 1: ID_ps, ID_prt
+// - 2: ID_BenefitCap_rt
+// - 3: NEED TO ADD PARAMETERS TO DO THIS!!!!!
+// - 4: CG_brk3, CG_rt4
+// - 5: EITC_MaxEligAge
+// - 6: SS_Earnings_thd
+{
+    "II_brk5": {"2021": [416700, 416700, 208350, 416700, 416700]},
+    "II_rt6": {"2021": 0.35},
+    "II_brk6": {"2021": [418400, 470700, 235350, 444550, 470700]},
+    "II_rt7": {"2021": 0.396},
+    "PT_brk5": {"2021": [416700, 416700, 208350, 416700, 416700]},
+    "PT_rt6": {"2021": 0.35},
+    "PT_brk6": {"2021": [418400, 470700, 235350, 444550, 470700]},
+    "PT_rt7": {"2021": 0.396},
+    "ID_ps": {"2021": [400000, 400000, 400000, 400000, 400000]},
+    "ID_prt": {"2021": 0.03},
+    "ID_BenefitCap_rt": {"2021": 0.28},
+    "CG_brk3": {"2021": [1000000, 1000000, 1000000, 1000000, 1000000]},
+    "CG_rt4": {"2021": 0.396},
+    "EITC_MaxEligAge": {"2021": 125},
+    "SS_Earnings_thd": {"2021": 400000}
+}

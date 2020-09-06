@@ -29,6 +29,7 @@ nind=62
 # Numbers of asset types
 ntype = 92
 
+
 # List of industry codes (exclude Federal Reserve Banks)
 ind_codes = ['110C', '113F', '2110', '2120', '2130', '2200', '2300',
              '3210', '3270', '3310', '3320', '3330', '3340', '3350',
