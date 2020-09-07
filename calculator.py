@@ -24,6 +24,7 @@ class Calculator():
         self.calc_all_called = False
         self.results_coc = dict()
         self.results_metr = dict()
+        self.results_ucoc = dict()
     
     def calc_all_basic(self, year):
         """
@@ -40,6 +41,10 @@ class Calculator():
         metr_scorp = np.zeros((ntype, nind))
         metr_soleprop = np.zeros((ntype, nind))
         metr_partner = np.zeros((ntype, nind))
+        ucoc_ccorp = np.zeros((ntype, nind))
+        ucoc_scorp = np.zeros((ntype, nind))
+        ucoc_soleprop = np.zeros((ntype, nind))
+        ucoc_partner = np.zeros((ntype, nind))
         # Extract policy parameters for the given year
         tau_c = self.pol.fetch('taxrt_ccorp', year)
         tau_sc = self.pol.fetch('taxrt_scorp', year)
@@ -103,6 +108,10 @@ class Calculator():
                 metr_scorp[i,j] = (coc_scorp[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
+                ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
+                ucoc_scorp[i,j] = coc_scorp[i,j] + delta
+                ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
+                ucoc_partner[i,j] = coc_partner[i,j] + delta
         print('Cost of capital calculations complete')
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
@@ -110,6 +119,9 @@ class Calculator():
         results2 = {'corp': metr_ccorp, 'scorp': metr_scorp,
                     'soleprop': metr_soleprop, 'partner': metr_partner}
         self.results_metr[str(year)] = results2
+        results3 = {'corp': ucoc_ccorp, 'scorp': ucoc_scorp,
+                    'soleprop': ucoc_soleprop, 'partner': ucoc_partner}
+        self.results_ucoc[str(year)] = results3
         self.calc_all_called = True
         
     def calc_all_forward(self, year):
@@ -193,7 +205,7 @@ class Calculator():
                 metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
-                ucoc_scor[i,j] = coc_scorp[i,j] + delta
+                ucoc_scorp[i,j] = coc_scorp[i,j] + delta
                 ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
                 ucoc_partner[i,j] = coc_partner[i,j] + delta
         print('Cost of capital calculations complete')

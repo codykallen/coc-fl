@@ -107,7 +107,7 @@ def calcDlist_dbsl(r, L, n, exprt, length=50):
     Dlist = np.zeros(length)
     Dlist[0] = exprt + (1 - exprt) * calcD_dbsl_per(r, L, n, 0, 0.5)
     for j in range(1, length):
-        Dlist[j] = (1 - exprt) * calc_D_dbsl(r, L, n, j-0.5, j+0.5)
+        Dlist[j] = (1 - exprt) * calcD_dbsl_per(r, L, n, j-0.5, j+0.5)
     return Dlist
 
 def calcD_econ(r, pi, delta):
@@ -322,7 +322,7 @@ def make_lists(poldf, ftype, syear, length=50): # taulist and philist
     assert type(length) is int
     assert length >= 1
     if ftype == 'ccorp':
-        phiid = 'cc'
+        phiid = 'c'
     else:
         phiid = 'nc'
     taulist = np.zeros(length)

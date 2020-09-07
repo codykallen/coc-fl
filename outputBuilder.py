@@ -109,13 +109,14 @@ class OutputBuilder():
         mtr_scorp = self.calc.results_metr[str(year)]['scorp']
         mtr_soleprop = self.calc.results_metr[str(year)]['soleprop']
         mtr_partner = self.calc.results_metr[str(year)]['partner']
+        ucoc_ccorp = self.calc.results_ucoc[str(year)]['corp']
+        ucoc_scorp = self.calc.results_ucoc[str(year)]['scorp']
+        ucoc_soleprop = self.calc.results_ucoc[str(year)]['soleprop']
+        ucoc_partner = self.calc.results_ucoc[str(year)]['partner']
         # Arrays for storing results
-        catlist = ['All', 'C corporations', 'S corporations',
-                   'Sole proprietorships', 'Partnerships',
-                   'Equipment', 'Structures', 'Residential',
-                   'Intellectual property']
         coclist = np.zeros(9)
         mtrlist = np.zeros(9)
+        ucoclist = np.zeros(9)
         # Store average results for cost of capital
         coclist[0] = ((coc_ccorp * stock_ccorp_arr
                        + coc_scorp * stock_scorp_arr
@@ -186,8 +187,43 @@ class OutputBuilder():
                        + mtr_partner[68:91,:] * stock_partner_arr[68:91,:]).sum()
                       / (stock_ccorp_arr[68:91,:] + stock_scorp_arr[68:91,:]
                          + stock_soleprop_arr[68:91,:] + stock_partner_arr[68:91,:]).sum())
-        df1 = pd.DataFrame({'Category': catlist, 'CoC': coclist, 'METR': mtrlist})
-        df1.to_csv(OUTPUTPATH + 'main_' + self.key + '_' + str(year) + '.csv', index=False)
+        # Store average results for user cost of capital
+        ucoclist[0] = ((ucoc_ccorp * stock_ccorp_arr
+                        + ucoc_scorp * stock_scorp_arr
+                        + ucoc_soleprop * stock_soleprop_arr
+                        + ucoc_partner * stock_partner_arr).sum()
+                       / (stock_ccorp_arr + stock_scorp_arr
+                         + stock_soleprop_arr + stock_partner_arr).sum())
+        ucoclist[1] = (ucoc_ccorp * stock_ccorp_arr).sum() / stock_ccorp_arr.sum()
+        ucoclist[2] = (ucoc_scorp * stock_scorp_arr).sum() / stock_scorp_arr.sum()
+        ucoclist[3] = (ucoc_soleprop * stock_soleprop_arr).sum() / stock_soleprop_arr.sum()
+        ucoclist[4] = (ucoc_partner * stock_partner_arr).sum() / stock_partner_arr.sum()
+        ucoclist[5] = ((ucoc_ccorp[0:37,:] * stock_ccorp_arr[0:37,:]
+                        + ucoc_scorp[0:37,:] * stock_scorp_arr[0:37,:]
+                        + ucoc_soleprop[0:37,:] * stock_soleprop_arr[0:37,:]
+                        + ucoc_partner[0:37,:] * stock_partner_arr[0:37,:]).sum()
+                       / (stock_ccorp_arr[0:37,:] + stock_scorp_arr[0:37,:]
+                          + stock_soleprop_arr[0:37,:] + stock_partner_arr[0:37,:]).sum())
+        ucoclist[6] = ((ucoc_ccorp[37:68,:] * stock_ccorp_arr[37:68,:]
+                        + ucoc_scorp[37:68,:] * stock_scorp_arr[37:68,:]
+                        + ucoc_soleprop[37:68,:] * stock_soleprop_arr[37:68,:]
+                        + ucoc_partner[37:68,:] * stock_partner_arr[37:68,:]).sum()
+                       / (stock_ccorp_arr[37:68] + stock_scorp_arr[37:68,:]
+                          + stock_soleprop_arr[37:68,:] + stock_partner_arr[37:68,:]).sum())
+        ucoclist[7] = ((ucoc_ccorp[91,:] * stock_ccorp_arr[91,:]
+                        + ucoc_scorp[91,:] * stock_scorp_arr[91,:]
+                        + ucoc_soleprop[91,:] * stock_soleprop_arr[91,:]
+                        + ucoc_partner[91,:] * stock_partner_arr[91,:]).sum()
+                       / (stock_ccorp_arr[91,:] + stock_scorp_arr[91,:]
+                          + stock_soleprop_arr[91,:] + stock_partner_arr[91,:]).sum())
+        ucoclist[8] = ((ucoc_ccorp[68:91,:] * stock_ccorp_arr[68:91,:]
+                        + ucoc_scorp[68:91,:] * stock_scorp_arr[68:91,:]
+                        + ucoc_soleprop[68:91,:] * stock_soleprop_arr[68:91,:]
+                        + ucoc_partner[68:91,:] * stock_partner_arr[68:91,:]).sum()
+                       / (stock_ccorp_arr[68:91,:] + stock_scorp_arr[68:91,:]
+                          + stock_soleprop_arr[68:91,:] + stock_partner_arr[68:91,:]).sum())
+        df1 = pd.DataFrame({'Category': catlist, 'CoC': coclist, 'METR': mtrlist, 'UCoC': ucoclist})
+        return df1
 
 
 
