@@ -54,3 +54,10 @@ ast_codes = ['EP1A', 'EP1B', 'EP1C', 'EP1D', 'EP1E', 'EP1F', 'EP1G', 'EP1H',
              'RD12', 'RD23', 'RD21', 'RD22', 'RD24', 'RD25', 'RD31', 'RD32',
              'RDOM', 'RD70', 'RD40', 'RD50', 'RD60', 'RD80', 'AE10', 'AE20',
              'AE30', 'AE40', 'AE50', 'RES']
+
+# List of cateogies for main tables
+catlist = ['All', 'C corporations', 'S corporations',
+           'Sole proprietorships', 'Partnerships',
+           'Equipment', 'Structures', 'Residential',
+           'Intellectual property']
+
