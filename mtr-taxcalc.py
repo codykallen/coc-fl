@@ -93,17 +93,17 @@ pols_extAll = pd.read_csv('policy_extendAll.csv')
 pols_base['taxrt_scorp'] = mtr_ps_base
 pols_base['taxrt_soleprop'] = mtr_sp_base
 pols_base['taxrt_partner'] = mtr_ps_base
-pols_base.to_csv('policy_baseline.csv')
+pols_base.to_csv('policy_baseline.csv', index=False)
 
 pols_extII['taxrt_scorp'] = mtr_ps_extII
 pols_extII['taxrt_soleprop'] = mtr_sp_extII
 pols_extII['taxrt_partner'] = mtr_ps_extII
-pols_extII.to_csv('policy_extendII.csv')
+pols_extII.to_csv('policy_extendII.csv', index=False)
 
 pols_extAll['taxrt_scorp'] = mtr_ps_extII
 pols_extAll['taxrt_soleprop'] = mtr_sp_extII
 pols_extAll['taxrt_partner'] = mtr_ps_extII
-pols_extAll.to_csv('policy_extendAll.csv')
+pols_extAll.to_csv('policy_extendAll.csv', index=False)
 
 #pols_biden['taxrt_scorp'] = mtr_ps_biden
 #pols_biden['taxrt_soleprop'] = mtr_sp_biden

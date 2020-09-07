@@ -33,6 +33,83 @@ def calcD_sl(r, L):
         D = (1.0 - np.exp(-r * L)) / (r * L)
     return D
 
+def calcD_dbsl_per(r, L, n, a, b):
+    """
+    Calculates PV of depreciation deductions during [a,b] for declining
+    balance and straight-line depreciation.
+        n: exponential depreciation:
+            2 for double-declining balance
+            1.5 for 150% declining balance
+            1 for straight-line
+        L: tax life
+        r: discount rate
+    """
+    # Ensure N is not an int
+    n = n * 1.0
+    # Switching point
+    t1 = L * (1 - 1 / n)
+    # End of tax life
+    t2 = L
+    if b <= t1:
+        # If entirely subject to exponential depreciation
+        D = (n / L / (r + n / L) * np.exp(-(r + n / L) * a) *
+             (1 - np.exp(-(r + n / L) * (b - a))))
+    elif b <= t2:
+        if a < t1:
+            # If period splits exponential and straight-line depreciation
+            Ddb = (n / L / (r + n / L) *
+                   np.exp(-(r + n / L) * a) *
+                   (1 - np.exp(-(r + n / L) * (t1 - a))))
+            if r == 0:
+                # Special case of zero nominal discount rate
+                Dsl = np.exp(1 - n) * (b - t1) / (t2 - t1)
+            else:
+                Dsl = (n / L / r * np.exp(1 - n) *
+                       np.exp(-r * t1) *
+                       (1 - np.exp(-r * (b - t1))))
+            D = Ddb + Dsl
+        else:
+            # If entirely subject to straight-line depreciation
+            if r == 0:
+                D = np.exp(1 - n) * (b - a) / (t2 - t1)
+            else:
+                D = (n / L / r * np.exp(1 - n) *
+                     np.exp(-r * a) *
+                     (1 - np.exp(-r * (b - a))))
+    else:
+        # end of period occurs after tax life ends
+        if a < t2:
+            # If tax life ends during period
+            if r == 0:
+                D = np.exp(1 - n) * (t2 - a) / (t2 - t1)
+            else:
+                D = (n / L / r * np.exp(1 - n) *
+                     np.exp(-r * a) *
+                     (1 - np.exp(-r * (t2 - a))))
+        else:
+            # If period occurs entirely after tax life has ended
+            D = 0
+    return D
+
+def calcDlist_dbsl(r, L, n, exprt, length=50):
+    """
+    Calculates present value of depreciation deductions over lifetime
+    for declining balance and straight-line depreciation.
+        N: exponential depreciation:
+            2 for double-declining balance
+            1.5 for 150% declining balance
+            1 for straight-line
+        L: tax life
+        r: discount rate
+        exprt: effective expensing rate
+        length: number of periods to use
+    """
+    Dlist = np.zeros(length)
+    Dlist[0] = exprt + (1 - exprt) * calcD_dbsl_per(r, L, n, 0, 0.5)
+    for j in range(1, length):
+        Dlist[j] = (1 - exprt) * calc_D_dbsl(r, L, n, j-0.5, j+0.5)
+    return Dlist
+
 def calcD_econ(r, pi, delta):
     """
     Calculate present value of depreciation deductions by economic
@@ -44,6 +121,37 @@ def calcD_econ(r, pi, delta):
     assert r - pi > 0
     D = delta / (r - pi + delta)
     return D
+
+def calcD_econ_per(r, pi, delta, a, b):
+    """
+    Calculates PV of depreciation deduction during [a,b] using economic
+    depreciation method.
+        delta: depreciation rate
+        r: discount rate
+    """
+    if r - pi + delta == 0:
+        D = delta * (b - a)
+    else:
+        D = (delta / (r - pi + delta) * np.exp(-(r - pi + delta) * a) *
+             (1 - np.exp(-(r - pi + delta) * (b - a))))
+    return D
+
+def calcDlist_econ(r, pi, delta, exprt, length=50):
+    """
+    Calculates present value of depreciation deductions over lifetime
+    for economic depreciation.
+        delta: depreciation rate
+        r: discount rate
+        exprt: effective expensing rate
+    """
+    # Calculate for fist (half) year
+    Dlist = np.zeros(length)
+    Dlist[0] = exprt + (1 - exprt) * calcD_econ_per(r, pi, delta, 0, 0.5)
+    for j in range(1, length-1):
+        Dlist[j] = (1 - exprt) * calcD_econ_per(r, pi, delta, j-0.5, j+0.5)
+    # Calculate from last period to infinity
+    Dlist[length-1] = (1 - exprt) * calcD_econ_per(r, pi, delta, length-1-0.5, 9e99)
+    return Dlist
 
 def calcITCpv(c, r, L):
     """
@@ -61,7 +169,7 @@ def calcITCpv(c, r, L):
     return pvc
 
 def calcZ1(method, r, tau, itcrt, itcdb, itclife, s179, bonus, 
-           pi=None, delta=None, life = None, accl = None,):
+           pi=None, delta=None, life = None, accl = None):
     """
     Calculate tax shield from capital cost recovery assuming constant tax
     rates.
@@ -82,6 +190,39 @@ def calcZ1(method, r, tau, itcrt, itcdb, itclife, s179, bonus,
     Z = tau * (1 - itcrt*itcdb) * (b + (1 - b) * D) + calcITCpv(itcrt, r, itclife)
     return Z
 
+def calcD_list(method, r, pi, delta, life, accl, exprt, length=50):
+    """
+    Build array of present values of depreciation deductions taken in each
+    period, using mid-year convention.
+    """
+    assert method in ['DB', 'SL', 'EXP', 'ECON']
+    if method == 'DB':
+        Dlist = calcDlist_dbsl(r, life, accl, exprt, length)
+    elif method == 'SL':
+        Dlist = calcDlist_dbsl(r, life, 1.0, exprt, length)
+    elif method == 'ECON':
+        Dlist = calcDlist_econ(r, pi, delta, exprt, length)
+    else:
+        Dlist = np.zeros(length)
+        Dlist[0] = 1.0
+    return Dlist
+
+def calcZ2(method, r, taulist, itcrt, itcdb, itclife, s179, bonus, 
+           pi=None, delta=None, life = None, accl=None, length=50):
+    """
+    Calculate tax shield from capital cost recovery assuming constant tax
+    rates.
+    """
+    # Compute effective expensing rate (ignoring actual expensing)
+    exprt = s179 + (1 - s179) * bonus
+    # Produce Dlist
+    Dlist = calcD_list(method, r, pi, delta, life, accl, exprt, length)
+    # Compute PV of tax shield from depreciation
+    PVD = sum(taulist * Dlist)
+    # Compute CCR tax shield
+    Z = (1 - itcrt*itcdb) * PVD + calcITCpv(itcrt, r, itclife)
+    return Z
+
 def calcF1(r, rd, pi, delta, Delta, tau, phi):
     """
     Calculate tax shield from debt financing assuming constant tax rates.
@@ -96,6 +237,57 @@ def calcF1(r, rd, pi, delta, Delta, tau, phi):
     F = Delta * rd * phi * tau / (r - pi + delta)
     return F
 
+def calcF_per(r, rd, pi, delta, Delta, a, b):
+    """
+    Calculates present value of interest accruing during period [a,b]
+        Delta: ratio of debt to assets
+        r: discount rate
+        rd: interest rate on debt
+        pi: inflation rate
+        delta: depreciation rate
+    """
+    F = (Delta * rd / (r - pi + delta) * np.exp(-(r - pi + delta) * a) *
+         (1 - np.exp(-(r - pi + delta) * (b - a))))
+    return F
+
+def calcF2(r, rd, pi, delta, Delta, taulist, philist, length=50):
+    """
+    Calculates present value of interest deduction over lifetime
+        Delta: ratio of debt to assets
+        r: discount rate
+        rd: interest rate on debt
+        pi: inflation rate
+        delta: depreciation rate
+        taulist: array of tax rates per period
+        philist: array of deductible shares of interest per period
+        length: number of periods to use
+    """
+    assert len(taulist) == length
+    assert len(philist) == length
+    Flist = np.zeros(length)
+    # Calcuate for first (half) year
+    Flist[0] = calcF_per(r, rd, pi, delta, Delta, 0, 0.5)
+    for j in range(1, length-1):
+        Flist[j] = calcF_per(r, rd, pi, delta, Delta, j-0.5, j+0.5)
+    # Calculate from final period to infinity
+    Flist[length-1] = calcF_per(r, rd, pi, delta, Delta, length-1-0.5, 9e99)
+    F = sum(Flist * philist * taulist)
+    return F
+
+def calcT(r, pi, delta, taulist):
+    """
+    Calculate weighted average tax rate over life of the asset.
+        r: discount rate
+        pi: inflation rate
+        delta: depreciation rate
+        taulist: array of tax rates per period
+    """
+    T = taulist[0] * (1 - np.exp(-(r - pi + delta) * 0.5))
+    for j in range(1, len(taulist) - 1):
+        T += taulist[j] * (np.exp(-(r - pi + delta) * (j - 0.5)) - np.exp(-(r - pi + delta) * (j + 0.5)))
+    T += taulist[len(taulist) - 1] * np.exp(-(r - pi + delta) * (len(taulist) - 1.5))
+    return T
+
 def calcCOC1(r, pi, rd, delta, Delta, tau, phi,
              method, itcrt, itcdb, itclife, s179, bonus, life, accl):
     """
@@ -105,4 +297,40 @@ def calcCOC1(r, pi, rd, delta, Delta, tau, phi,
     F = calcF1(r, rd, pi, delta, Delta, tau, phi)
     rho = (1 - Z - F) / (1 - tau) * (r - pi + delta) - delta
     return rho
+
+def calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
+             method, itcrt, itcdb, itclife, s179, bonus, life, accl,
+             length = 50):
+    """
+    Calculate cost of capital allowing for tax rates that vary by year.
+    """
+    Z = calcZ2(method, r, taulist, itcrt, itcdb, itclife, s179, bonus, pi, delta, life, accl, length)
+    F = calcF2(r, rd, pi, delta, Delta, taulist, philist, length)
+    T = calcT(r, pi, delta, taulist)
+    rho = (1 - Z - F) / (1 - T) * (r - pi + delta) - delta
+    return rho
+
+def make_lists(poldf, ftype, syear, length=50): # taulist and philist
+    """
+    Make arrays of given length of tax rates and deductible interest shares.
+        policies: regular policy DataFrame
+        ftype: type of firm
+        syear: year to begin array
+    """
+    assert ftype in ['ccorp', 'scorp', 'soleprop', 'partner']
+    assert syear >= 2020
+    assert type(length) is int
+    assert length >= 1
+    if ftype == 'ccorp':
+        phiid = 'cc'
+    else:
+        phiid = 'nc'
+    taulist = np.zeros(length)
+    philist = np.zeros(length)
+    for year in range(syear, syear + length):
+        taulist[year-syear] = poldf.loc[min(year, 2029), 'taxrt_' + ftype]
+        philist[year-syear] = poldf.loc[min(year, 2029), 'intded_' + phiid]
+    return (taulist, philist)
+
+
 
