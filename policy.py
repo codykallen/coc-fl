@@ -19,6 +19,9 @@ class Policy():
             ccr1 = pd.read_excel(ccrfile, sheet_name=self.policies.loc[year, 'ccr_sheet'])
             ccr1.rename({'Asset code': 'asset'}, axis=1, inplace=True)
             ccrRules[str(year)] = ccr1.set_index('asset')
+        ccr2 = pd.read_excel(ccrfile, sheet_name='foreign')
+        ccr2.rename({'Asset code': 'asset'}, axis=1, inplace=True)
+        ccrRules['foreign'] = ccr1.set_index('asset')
         self.ccrRules = ccrRules
         
     def read_ccr(self, year):
@@ -26,8 +29,11 @@ class Policy():
         Return DF of capital cost recovery rules for the given year.
         """
         if type(year) is not int:
-            print('Warning: year must be an integer!')
-            return None
+            if year == 'foreign':
+                return self.ccrRules['foreign']
+            else:
+                print('Warning: year must be an integer!')
+                return None
         else:
             if year < 2020:
                 print('Warning: year must be >= 2020')

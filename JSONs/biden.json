@@ -10,6 +10,7 @@
 // - Add fourth capital gains bracket over $1 million at 39.6 percnet (4)
 // - Extend the EITC to those over age 65 (5) (EITC_MaxEligAge = 125)
 // - Apply the 12.4 percent OASDI payroll tax to earnings above $400k (6)
+// - Replace deductions for IRA and KEOGH contributions with 26% credit (7)
 // Provisions not modeled:
 // - Tax unrealized capital gains at death
 // - Increase tax preferences for middle-income taxpayers' contributions to 401(k) and IRA accounts
@@ -21,24 +22,47 @@
 // - 0: II_rt*, II_brk*, PT_rt*, PT_brk*
 // - 1: ID_ps, ID_prt
 // - 2: ID_BenefitCap_rt
-// - 3: NEED TO ADD PARAMETERS TO DO THIS!!!!!
+// - 3: PT_qbid_pthd, PT_qbid_prt
 // - 4: CG_brk3, CG_rt4
 // - 5: EITC_MaxEligAge
 // - 6: SS_Earnings_thd
+// - 7: ALD_IRAContributions_hc, ALD_KEOGH_SEP_hc, RetirementSaving_crt
 {
-    "II_brk5": {"2021": [416700, 416700, 208350, 416700, 416700]},
-    "II_rt6": {"2021": 0.35},
-    "II_brk6": {"2021": [418400, 470700, 235350, 444550, 470700]},
-    "II_rt7": {"2021": 0.396},
-    "PT_brk5": {"2021": [416700, 416700, 208350, 416700, 416700]},
-    "PT_rt6": {"2021": 0.35},
-    "PT_brk6": {"2021": [418400, 470700, 235350, 444550, 470700]},
-    "PT_rt7": {"2021": 0.396},
-    "ID_ps": {"2021": [400000, 400000, 400000, 400000, 400000]},
+    "II_brk5": {"2021": [211844, 400000, 211844, 211844, 400000],
+                "2026": [502101, 502101, 251050, 502101, 502101]},
+    "II_rt6": {"2021": 0.33,
+               "2026": 0.35},
+    "II_brk6": {"2021": [416700, 416700, 317775, 416700, 416700],
+               "2026": [504149, 567168, 283575, 535659, 567168]},
+    "II_rt7": {"2021": 0.35,
+               "2026": 0.396},
+    "II_brk7": {"2021": [418400, 470700, 400000, 444550, 470700],
+                "2026": [9e99, 9e99, 9e99, 9e99, 9e99]},
+    "II_rt8": {"2021": 0.396,
+               "2026": 1},
+    "PT_brk5": {"2021": [211844, 400000, 211844, 211844, 400000],
+                "2026": [502101, 502101, 251050, 502101, 502101]},
+    "PT_rt6": {"2021": 0.33,
+               "2026": 0.35},
+    "PT_brk6": {"2021": [416700, 416700, 317775, 416700, 416700],
+               "2026": [504149, 567168, 283575, 535659, 567168]},
+    "PT_rt7": {"2021": 0.35,
+               "2026": 0.396},
+    "PT_brk7": {"2021": [418400, 470700, 400000, 444550, 470700],
+                "2026": [9e99, 9e99, 9e99, 9e99, 9e99]},
+    "PT_rt8": {"2021": 0.396,
+               "2026": 1},
+    "ID_ps": {"2021": [400000, 400000, 400000, 400000, 400000],
+                "2026": [315093.0, 378112.0, 189056.0, 346603.0, 378112.0]},
     "ID_prt": {"2021": 0.03},
     "ID_BenefitCap_rt": {"2021": 0.28},
+    "PT_qbid_ps": {"2021": [400000.00, 400000.00, 400000.00, 400000.00, 400000.00]},
+    "PT_qbid_prt": {"2021": 0.03},
     "CG_brk3": {"2021": [1000000, 1000000, 1000000, 1000000, 1000000]},
     "CG_rt4": {"2021": 0.396},
     "EITC_MaxEligAge": {"2021": 125},
-    "SS_Earnings_thd": {"2021": 400000}
+    "SS_Earnings_thd": {"2021": 400000},
+    "ALD_IRAContributions_hc": {"2021": 1.0},
+    "ALD_KEOGH_SEP_hc": {"2021": 1.0},
+    "RetirementSaving_crt": {"2021": 0.26}
 }

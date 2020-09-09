@@ -31,10 +31,10 @@ class OutputBuilder():
         """
         Read in asset data by asset type, industry and firm type.
         """
-        self.stock_ccorp = pd.read_csv(OUTPUTPATH + 'stock_ccorp.csv', index_col='asset').fillna(value = 0)
-        self.stock_scorp = pd.read_csv(OUTPUTPATH + 'stock_scorp.csv', index_col='asset').fillna(value = 0)
-        self.stock_soleprop = pd.read_csv(OUTPUTPATH + 'stock_soleprop.csv', index_col='asset').fillna(value = 0)
-        self.stock_partner = pd.read_csv(OUTPUTPATH + 'stock_partner.csv', index_col='asset').fillna(value = 0)
+        self.stock_ccorp = pd.read_csv(OUTPUTPATH + 'capital/stock_ccorp.csv', index_col='asset').fillna(value = 0)
+        self.stock_scorp = pd.read_csv(OUTPUTPATH + 'capital/stock_scorp.csv', index_col='asset').fillna(value = 0)
+        self.stock_soleprop = pd.read_csv(OUTPUTPATH + 'capital/stock_soleprop.csv', index_col='asset').fillna(value = 0)
+        self.stock_partner = pd.read_csv(OUTPUTPATH + 'capital/stock_partner.csv', index_col='asset').fillna(value = 0)
     
     def store_raw(self, year):
         """
@@ -51,14 +51,14 @@ class OutputBuilder():
         df_soleprop2 = pd.DataFrame(self.calc.results_metr[str(year)]['soleprop'], index=ast_codes, columns=ind_codes)
         df_partner2 = pd.DataFrame(self.calc.results_metr[str(year)]['partner'], index=ast_codes, columns=ind_codes)
         # Save results to CSV files
-        df_corp1.to_csv(OUTPUTPATH + 'coc_corp_' + self.key + '_' + str(year) + '.csv')
-        df_scorp1.to_csv(OUTPUTPATH + 'coc_scorp_' + self.key + '_' + str(year) + '.csv')
-        df_soleprop1.to_csv(OUTPUTPATH + 'coc_soleprop_' + self.key + '_' + str(year) + '.csv')
-        df_partner1.to_csv(OUTPUTPATH + 'coc_partner_' + self.key + '_' + str(year) + '.csv')
-        df_corp2.to_csv(OUTPUTPATH + 'metr_corp_' + self.key + '_' + str(year) + '.csv')
-        df_scorp2.to_csv(OUTPUTPATH + 'metr_scorp_' + self.key + '_' + str(year) + '.csv')
-        df_soleprop2.to_csv(OUTPUTPATH + 'metr_soleprop_' + self.key + '_' + str(year) + '.csv')
-        df_partner2.to_csv(OUTPUTPATH + 'metr_partner_' + self.key + '_' + str(year) + '.csv')
+        df_corp1.to_csv(OUTPUTPATH + 'raw/coc_corp_' + self.key + '_' + str(year) + '.csv')
+        df_scorp1.to_csv(OUTPUTPATH + 'raw/coc_scorp_' + self.key + '_' + str(year) + '.csv')
+        df_soleprop1.to_csv(OUTPUTPATH + 'raw/coc_soleprop_' + self.key + '_' + str(year) + '.csv')
+        df_partner1.to_csv(OUTPUTPATH + 'raw/coc_partner_' + self.key + '_' + str(year) + '.csv')
+        df_corp2.to_csv(OUTPUTPATH + 'raw/metr_corp_' + self.key + '_' + str(year) + '.csv')
+        df_scorp2.to_csv(OUTPUTPATH + 'raw/metr_scorp_' + self.key + '_' + str(year) + '.csv')
+        df_soleprop2.to_csv(OUTPUTPATH + 'raw/metr_soleprop_' + self.key + '_' + str(year) + '.csv')
+        df_partner2.to_csv(OUTPUTPATH + 'raw/metr_partner_' + self.key + '_' + str(year) + '.csv')
     
     def tabulate_industry(self, year):
         """
@@ -113,10 +113,15 @@ class OutputBuilder():
         ucoc_scorp = self.calc.results_ucoc[str(year)]['scorp']
         ucoc_soleprop = self.calc.results_ucoc[str(year)]['soleprop']
         ucoc_partner = self.calc.results_ucoc[str(year)]['partner']
+        # Extract international results
+        eatr_d = self.calc.results_international[str(year)]['domestic']
+        eatr_f = self.calc.results_international[str(year)]['foreign']
         # Arrays for storing results
         coclist = np.zeros(9)
         mtrlist = np.zeros(9)
         ucoclist = np.zeros(9)
+        eatrdlist = np.zeros(9)
+        eatrflist = np.zeros(9)
         # Store average results for cost of capital
         coclist[0] = ((coc_ccorp * stock_ccorp_arr
                        + coc_scorp * stock_scorp_arr
@@ -222,7 +227,20 @@ class OutputBuilder():
                         + ucoc_partner[68:91,:] * stock_partner_arr[68:91,:]).sum()
                        / (stock_ccorp_arr[68:91,:] + stock_scorp_arr[68:91,:]
                           + stock_soleprop_arr[68:91,:] + stock_partner_arr[68:91,:]).sum())
-        df1 = pd.DataFrame({'Category': catlist, 'CoC': coclist, 'METR': mtrlist, 'UCoC': ucoclist})
+        # Store average results for EATRs
+        eatrdlist[0] = (eatr_d * stock_ccorp_arr).sum() / stock_ccorp_arr.sum()
+        eatrflist[0] = (eatr_f * stock_ccorp_arr).sum() / stock_ccorp_arr.sum()
+        eatrdlist[5] = (eatr_d[0:37,:] * stock_ccorp_arr[0:37,:]).sum() / stock_ccorp_arr[0:37,:].sum()
+        eatrflist[5] = (eatr_f[0:37,:] * stock_ccorp_arr[0:37,:]).sum() / stock_ccorp_arr[0:37,:].sum()
+        eatrdlist[6] = (eatr_d[37:68,:] * stock_ccorp_arr[37:68,:]).sum() / stock_ccorp_arr[37:68,:].sum()
+        eatrflist[6] = (eatr_f[37:68,:] * stock_ccorp_arr[37:68,:]).sum() / stock_ccorp_arr[37:68,:].sum()
+        eatrdlist[7] = (eatr_d[91,:] * stock_ccorp_arr[91,:]).sum() / stock_ccorp_arr[91,:].sum()
+        eatrflist[7] = (eatr_f[91,:] * stock_ccorp_arr[91,:]).sum() / stock_ccorp_arr[91,:].sum()
+        eatrdlist[8] = (eatr_d[68:91,:] * stock_ccorp_arr[68:91,:]).sum() / stock_ccorp_arr[68:91,:].sum()
+        eatrflist[8] = (eatr_f[68:91,:] * stock_ccorp_arr[68:91,:]).sum() / stock_ccorp_arr[68:91,:].sum()
+        df1 = pd.DataFrame({'Category': catlist, 'CoC': coclist,
+                            'METR': mtrlist, 'UCoC': ucoclist,
+                            'EATRd': eatrdlist, 'EATRf': eatrflist})
         return df1
 
 

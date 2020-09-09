@@ -24,7 +24,6 @@ import copy
 import numpy as np
 import pandas as pd
 from config import *
-#from outputBuilder import OutputBuilder
 
 # Read in and store data files
 file_stock_AI = pd.ExcelFile(INPUTPATH + 'BEA/detailnonres_stk1.xlsx')
@@ -161,14 +160,14 @@ stocks['partner'].loc['RES','5310'] = res_inv_partner
 
 
 # Save the relevant results
-stocks['ccorp'].to_csv(OUTPUTPATH + 'stock_ccorp.csv')
-stocks['scorp'].to_csv(OUTPUTPATH + 'stock_scorp.csv')
-stocks['sole prop'].to_csv(OUTPUTPATH + 'stock_soleprop.csv')
-stocks['partner'].to_csv(OUTPUTPATH + 'stock_partner.csv')
-invs['ccorp'].to_csv(OUTPUTPATH + 'inv_ccorp.csv')
-invs['scorp'].to_csv(OUTPUTPATH + 'inv_scorp.csv')
-invs['sole prop'].to_csv(OUTPUTPATH + 'inv_soleprop.csv')
-invs['partner'].to_csv(OUTPUTPATH + 'inv_partner.csv')
+stocks['ccorp'].to_csv(OUTPUTPATH + 'capital/stock_ccorp.csv')
+stocks['scorp'].to_csv(OUTPUTPATH + 'capital/stock_scorp.csv')
+stocks['sole prop'].to_csv(OUTPUTPATH + 'capital/stock_soleprop.csv')
+stocks['partner'].to_csv(OUTPUTPATH + 'capital/stock_partner.csv')
+invs['ccorp'].to_csv(OUTPUTPATH + 'capital/inv_ccorp.csv')
+invs['scorp'].to_csv(OUTPUTPATH + 'capital/inv_scorp.csv')
+invs['sole prop'].to_csv(OUTPUTPATH + 'capital/inv_soleprop.csv')
+invs['partner'].to_csv(OUTPUTPATH + 'capital/inv_partner.csv')
 
 
 
