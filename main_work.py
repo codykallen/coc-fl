@@ -18,7 +18,7 @@ from config import *
 """
 Note: Before running the following, make sure to execute the code in
       data.py. Also, compute the average EMTRs on each type of pass-through
-      income using iiEMTR.py.
+      income using mtr_taxcalc.py.
 """
 
 # Whether to look forward or to use naive equations
@@ -85,7 +85,14 @@ main_ucoc_base = pd.DataFrame({'Category': catlist})
 main_ucoc_extII = pd.DataFrame({'Category': catlist})
 main_ucoc_extAll = pd.DataFrame({'Category': catlist})
 main_ucoc_biden = pd.DataFrame({'Category': catlist})
-
+main_eatrd_base = pd.DataFrame({'Category': catlist})
+main_eatrd_extII = pd.DataFrame({'Category': catlist})
+main_eatrd_extAll = pd.DataFrame({'Category': catlist})
+main_eatrd_biden = pd.DataFrame({'Category': catlist})
+main_eatrf_base = pd.DataFrame({'Category': catlist})
+main_eatrf_extII = pd.DataFrame({'Category': catlist})
+main_eatrf_extAll = pd.DataFrame({'Category': catlist})
+main_eatrf_biden = pd.DataFrame({'Category': catlist})
 
 for year in range(2021, 2030):
     # Run tabulations
@@ -108,22 +115,37 @@ for year in range(2021, 2030):
     main_ucoc_extII[str(year)] = res1_extII['UCoC']
     main_ucoc_extAll[str(year)] = res1_extAll['UCoC']
     main_ucoc_biden[str(year)] = res1_biden['UCoC']
+    # Store EATR results
+    main_eatrd_base[str(year)] = res1_base['EATRd']
+    main_eatrd_extII[str(year)] = res1_extII['EATRd']
+    main_eatrd_extAll[str(year)] = res1_extAll['EATRd']
+    main_eatrd_biden[str(year)] = res1_biden['EATRd']
+    main_eatrf_base[str(year)] = res1_base['EATRf']
+    main_eatrf_extII[str(year)] = res1_extII['EATRf']
+    main_eatrf_extAll[str(year)] = res1_extAll['EATRf']
+    main_eatrf_biden[str(year)] = res1_biden['EATRf']
 
 # Save results to tables for combining later
-main_coc_base.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_coc_' + 'base' + '.csv', index=False)
-main_coc_extII.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_coc_' + 'extII' + '.csv', index=False)
-main_coc_extAll.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_coc_' + 'extAll' + '.csv', index=False)
-main_coc_biden.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_coc_' + 'biden' + '.csv', index=False)
-main_mtr_base.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_mtr_' + 'base' + '.csv', index=False)
-main_mtr_extII.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_mtr_' + 'extII' + '.csv', index=False)
-main_mtr_extAll.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_mtr_' + 'extAll' + '.csv', index=False)
-main_mtr_biden.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_mtr_' + 'biden' + '.csv', index=False)
-main_ucoc_base.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_ucoc_' + 'base' + '.csv', index=False)
-main_ucoc_extII.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_ucoc_' + 'extII' + '.csv', index=False)
-main_ucoc_extAll.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_ucoc_' + 'extAll' + '.csv', index=False)
-main_ucoc_biden.to_csv(OUTPUTPATH + 'compiled_' + eqstyle + '_ucoc_' + 'biden' + '.csv', index=False)
-
-
+main_coc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'base' + '.csv', index=False)
+main_coc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'extII' + '.csv', index=False)
+main_coc_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'extAll' + '.csv', index=False)
+main_coc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'biden' + '.csv', index=False)
+main_mtr_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'base' + '.csv', index=False)
+main_mtr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extII' + '.csv', index=False)
+main_mtr_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extAll' + '.csv', index=False)
+main_mtr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'biden' + '.csv', index=False)
+main_ucoc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'base' + '.csv', index=False)
+main_ucoc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extII' + '.csv', index=False)
+main_ucoc_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extAll' + '.csv', index=False)
+main_ucoc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'biden' + '.csv', index=False)
+main_eatrd_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'base' + '.csv', index=False)
+main_eatrd_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'extII' + '.csv', index=False)
+main_eatrd_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'extAll' + '.csv', index=False)
+main_eatrd_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'biden' + '.csv', index=False)
+main_eatrf_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'base' + '.csv', index=False)
+main_eatrf_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'extII' + '.csv', index=False)
+main_eatrf_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'extAll' + '.csv', index=False)
+main_eatrf_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'biden' + '.csv', index=False)
 
 
 

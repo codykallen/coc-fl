@@ -310,6 +310,82 @@ def calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
     rho = (1 - Z - F) / (1 - T) * (r - pi + delta) - delta
     return rho
 
+def calcEATRd1(r, pi, rd, delta, Delta, tau, phi, exFDII, tang, p,
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+    """
+    Calculate EATR on domestic investment with foreign sales,
+    assuming constant tax rates.
+        exFDII: FDII exclusion rate
+        tang: indicator for asset tangibility
+        p: Income rate (generally 20%, at least 10%)
+    """
+    assert tang in [0, 1]
+    assert p > 0.1
+    assert exFDII >= 0
+    assert exFDII <= 1
+    coc = calcCOC1(r, pi, rd, delta, Delta, tau, phi,
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+    eatr = (coc - r + pi) / p + (p - coc) / p * tau - (p - 0.1*tang) / p * exFDII * tau
+    return eatr
+
+def calcEATRd2(r, pi, rd, delta, Delta, taulist, philist, exFDII, tang, p,
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+    """
+    Calculate EATR on domestic investment with foreign sales,
+    allowing for tax rates that vary by year.
+        exFDII: FDII exclusion rate
+        tang: indicator for asset tangibility
+        p: Income rate (generally 20%, at least 10%)
+    """
+    assert tang in [0, 1]
+    assert p > 0.1
+    assert exFDII >= 0
+    assert exFDII <= 1
+    coc = calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+    T = calcT(r, pi, delta, taulist)
+    eatr = (coc - r + pi) / p + (p - coc) / p * T - (p - 0.1*tang) / p * exFDII * T
+    return eatr
+
+def calcEATRf1(r, pi, rd, delta, Delta, tau, exGILTI, tang, p, tauf,
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+    """
+    Calculate EATR on domestic investment with foreign sales,
+    assuming constant tax rates.
+        exGILTI: FDII exclusion rate
+        tang: indicator for asset tangibility
+        p: Income rate (generally 20%, at least 10%)
+        tauf: foreign tax rate
+    """
+    assert tang in [0, 1]
+    assert p > 0.1
+    assert exGILTI >= 0
+    assert exGILTI <= 1
+    coc = calcCOC1(r, pi, rd, delta, Delta, tauf, 1.0,
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+    eatr = (coc - r + pi) / p + (p - coc) / p * tauf + (p - 0.1*tang) / p * max(tau * (1.0 - exGILTI) - 0.8*tauf, 0)
+    return eatr
+
+def calcEATRf2(r, pi, rd, delta, Delta, taulist, exGILTI, tang, p, tauf,
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+    """
+    Calculate EATR on domestic investment with foreign sales,
+    assuming constant tax rates.
+        exGILTI: FDII exclusion rate
+        tang: indicator for asset tangibility
+        p: Income rate (generally 20%, at least 10%)
+        tauf: foreign tax rate
+    """
+    assert tang in [0, 1]
+    assert p > 0.1
+    assert exGILTI >= 0
+    assert exGILTI <= 1
+    coc = calcCOC1(r, pi, rd, delta, Delta, tauf, 1.0,
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+    T = calcT(r, pi, delta, taulist)
+    eatr = (coc - r + pi) / p + (p - coc) / p * tauf + (p - 0.1*tang) / p * max(T * (1.0 - exGILTI) - 0.8*tauf, 0)
+    return eatr
+
 def make_lists(poldf, ftype, syear, length=50): # taulist and philist
     """
     Make arrays of given length of tax rates and deductible interest shares.
@@ -331,6 +407,7 @@ def make_lists(poldf, ftype, syear, length=50): # taulist and philist
         taulist[year-syear] = poldf.loc[min(year, 2029), 'taxrt_' + ftype]
         philist[year-syear] = poldf.loc[min(year, 2029), 'intded_' + phiid]
     return (taulist, philist)
+
 
 
 

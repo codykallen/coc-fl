@@ -25,6 +25,7 @@ class Calculator():
         self.results_coc = dict()
         self.results_metr = dict()
         self.results_ucoc = dict()
+        self.results_international = dict()
     
     def calc_all_basic(self, year):
         """
@@ -45,6 +46,8 @@ class Calculator():
         ucoc_scorp = np.zeros((ntype, nind))
         ucoc_soleprop = np.zeros((ntype, nind))
         ucoc_partner = np.zeros((ntype, nind))
+        eatr_dom = np.zeros((ntype, nind))
+        eatr_for = np.zeros((ntype, nind))
         # Extract policy parameters for the given year
         tau_c = self.pol.fetch('taxrt_ccorp', year)
         tau_sc = self.pol.fetch('taxrt_scorp', year)
@@ -53,6 +56,9 @@ class Calculator():
         phi_c = self.pol.fetch('intded_c', year)
         phi_nc = self.pol.fetch('intded_nc', year)
         drules = self.pol.read_ccr(year)
+        drulesf = self.pol.read_ccr('foreign')
+        FDIIrt = self.pol.fetch('fdii_ex', year)
+        GILTIrt = self.pol.fetch('gilti_ex', year)
         for i in range(ntype):
             ast = ast_codes[i]
             for j in range(nind):
@@ -65,7 +71,7 @@ class Calculator():
                 delta = self.parm.deltas.loc[ast, 'delta']
                 s179_c = self.parm.s179.loc[ast, 'corp']
                 s179_nc = self.parm.s179.loc[ast, 'noncorp']
-                
+                tauf = self.parm.foreign.loc[ind, 'tauf']
                 # Compute costs of capital
                 coc_ccorp[i,j] = calcCOC1(r_c, self.parm.pi, self.parm.rd,
                                           delta, Delta_c, tau_c, phi_c,
@@ -112,6 +118,31 @@ class Calculator():
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
                 ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
                 ucoc_partner[i,j] = coc_partner[i,j] + delta
+                # Compute EATRs
+                if ast[0:2] in ['EN', 'RD', 'AE']:
+                    tang = 0
+                else:
+                    tang = 1
+                eatr_dom[i,j] = calcEATRd1(r_c, self.parm.pi, self.parm.rd,
+                                           delta, Delta_c, tau_c, phi_c,
+                                           FDIIrt, tang, 0.2,
+                                           drulesf.loc[ast, 'method'],
+                                           drulesf.loc[ast, 'itcrt'],
+                                           drulesf.loc[ast, 'itc_base'],
+                                           drulesf.loc[ast, 'itc_life'],
+                                           0.0, drules.loc[ast, 'bonus'],
+                                           drulesf.loc[ast, 'life'],
+                                           drulesf.loc[ast, 'acclrt'])
+                eatr_for[i,j ] = calcEATRf1(r_c, self.parm.pi, self.parm.rd,
+                                           delta, Delta_c, tau_c,
+                                           GILTIrt, tang, 0.2, tauf,
+                                           drulesf.loc[ast, 'method'],
+                                           drulesf.loc[ast, 'itcrt'],
+                                           drulesf.loc[ast, 'itc_base'],
+                                           drulesf.loc[ast, 'itc_life'],
+                                           0.0, drules.loc[ast, 'bonus'],
+                                           drulesf.loc[ast, 'life'],
+                                           drulesf.loc[ast, 'acclrt'])
         print('Cost of capital calculations complete')
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
@@ -122,6 +153,8 @@ class Calculator():
         results3 = {'corp': ucoc_ccorp, 'scorp': ucoc_scorp,
                     'soleprop': ucoc_soleprop, 'partner': ucoc_partner}
         self.results_ucoc[str(year)] = results3
+        results4 = {'domestic': eatr_dom, 'foreign': eatr_for}
+        self.results_international[str(year)] = results4
         self.calc_all_called = True
         
     def calc_all_forward(self, year):
@@ -143,12 +176,17 @@ class Calculator():
         ucoc_scorp = np.zeros((ntype, nind))
         ucoc_soleprop = np.zeros((ntype, nind))
         ucoc_partner = np.zeros((ntype, nind))
+        eatr_dom = np.zeros((ntype, nind))
+        eatr_for = np.zeros((ntype, nind))
         # Extract policy parameters for the given year
         (taulist_c, philist_c) = make_lists(self.pol.policies, 'ccorp', year, length=50)
         (taulist_sc, philist_nc) = make_lists(self.pol.policies, 'scorp', year, length=50)
         (taulist_sp, _) = make_lists(self.pol.policies, 'soleprop', year, length=50)
         (taulist_p, _) = make_lists(self.pol.policies, 'partner', year, length=50)
         drules = self.pol.read_ccr(year)
+        drulesf = self.pol.read_ccr('foreign')
+        FDIIrt = self.pol.fetch('fdii_ex', year)
+        GILTIrt = self.pol.fetch('gilti_ex', year)
         for i in range(ntype):
             ast = ast_codes[i]
             for j in range(nind):
@@ -161,7 +199,7 @@ class Calculator():
                 delta = self.parm.deltas.loc[ast, 'delta']
                 s179_c = self.parm.s179.loc[ast, 'corp']
                 s179_nc = self.parm.s179.loc[ast, 'noncorp']
-                
+                tauf = self.parm.foreign.loc[ind, 'tauf']
                 # Compute costs of capital
                 coc_ccorp[i,j] = calcCOC2(r_c, self.parm.pi, self.parm.rd,
                                           delta, Delta_c, taulist_c, philist_c,
@@ -208,6 +246,31 @@ class Calculator():
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
                 ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
                 ucoc_partner[i,j] = coc_partner[i,j] + delta
+                # Compute EATRs
+                if ast[0:2] in ['EN', 'RD', 'AE']:
+                    tang = 0
+                else:
+                    tang = 1
+                eatr_dom[i,j] = calcEATRd2(r_c, self.parm.pi, self.parm.rd,
+                                           delta, Delta_c, taulist_c, philist_c,
+                                           FDIIrt, tang, 0.2,
+                                           drulesf.loc[ast, 'method'],
+                                           drulesf.loc[ast, 'itcrt'],
+                                           drulesf.loc[ast, 'itc_base'],
+                                           drulesf.loc[ast, 'itc_life'],
+                                           0.0, drules.loc[ast, 'bonus'],
+                                           drulesf.loc[ast, 'life'],
+                                           drulesf.loc[ast, 'acclrt'])
+                eatr_for[i,j ] = calcEATRf2(r_c, self.parm.pi, self.parm.rd,
+                                           delta, Delta_c, taulist_c,
+                                           GILTIrt, tang, 0.2, tauf,
+                                           drulesf.loc[ast, 'method'],
+                                           drulesf.loc[ast, 'itcrt'],
+                                           drulesf.loc[ast, 'itc_base'],
+                                           drulesf.loc[ast, 'itc_life'],
+                                           0.0, drules.loc[ast, 'bonus'],
+                                           drulesf.loc[ast, 'life'],
+                                           drulesf.loc[ast, 'acclrt'])
         print('Cost of capital calculations complete')
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
@@ -218,4 +281,6 @@ class Calculator():
         results3 = {'corp': ucoc_ccorp, 'scorp': ucoc_scorp,
                     'soleprop': ucoc_soleprop, 'partner': ucoc_partner}
         self.results_ucoc[str(year)] = results3
+        results4 = {'domestic': eatr_dom, 'foreign': eatr_for}
+        self.results_international[str(year)] = results4
         self.calc_all_called = True

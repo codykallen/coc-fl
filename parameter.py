@@ -17,6 +17,7 @@ class Parameter():
         self.read_depr()
         self.read_debt()
         self.read_sec179()
+        self.read_foreign()
     
     def set_chosen_parms(self):
         """
@@ -64,5 +65,13 @@ class Parameter():
         s179file = pd.read_csv(INPUTPATH + 'sec179use.csv')
         s179file.set_index('asset', inplace=True)
         self.s179 = copy.deepcopy(s179file)
+    
+    def read_foreign(self):
+        """
+        Read in foreign tax rates and asset information.
+        """
+        ffile = pd.read_csv(INPUTPATH + 'international-by-industry.csv')
+        ffile.set_index('indcode', inplace=True)
+        self.foreign = copy.deepcopy(ffile)
 
 

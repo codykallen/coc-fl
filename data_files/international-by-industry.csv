@@ -1,0 +1,63 @@
+indcode,industry name,tauf
+110C,Farms,0.140995232
+113F,"Forestry, etc",0.140995232
+2110,Mining - oil & gas,0.694199243
+2120,Mining - except oil and gas,0.187476353
+2130,Mining support activities,0.187476353
+2200,Utilities,0.120201097
+2300,Construction,0.276456112
+311A,"Food, beverage and tobacco",0.05163332
+313T,Textiles,0.06611283
+315A,Apparel & leather,0.06611283
+3210,Wood products,0.148148148
+3220,Paper products,0.046197165
+3230,Print and related,0.12109375
+3240,Petroleum & coal products,0.117605666
+3250,Chemical products,0.066730187
+3260,Plastic & rubber products,0.048622366
+3270,Nonmetallic mineral products,0.186101296
+3310,Primary metals,0.078659869
+3320,Fabricated metal products,0.106902871
+3330,Machinary,0.073224155
+3340,Computer & electronic products,0.035173049
+3350,"Electrical equipment, appliances & components",0.06172135
+336M,Motor vehicles & parts,0.06611283
+336O,Other transportation equipment,0.06611283
+3370,Furniture & related,0.06611283
+338A,Misc manufacturing,0.06611283
+4200,Wholesale trade,0.140737472
+44RT,Retail trade,0.108140583
+4810,Air trans,0.179045569
+4820,Rail trans,0.179045569
+4830,Water trans,0.179045569
+4840,Truck trans,0.179045569
+4850,Transit,0.179045569
+4860,Pipeline trans,0.179045569
+487S,Other transportation equipment,0.179045569
+4930,Warehousing,0.179045569
+5110,Publishing,0.006750981
+5120,Motion picture & recording,0.464285714
+5130,Broadcasting & telecoms,0.495683453
+5140,Info & data processing,0.017993416
+5220,Credit intermediation,0.120309612
+5230,Securities & investments,0.090363082
+5240,Insurance,0.14980536
+5250,"Funds, trusts, etc.",0.102848683
+5310,Real estate,0.101491705
+5320,Rental & leasing,0.101491705
+5411,Legal services,0.071823314
+5415,Computer services,0.064815074
+5412,Misc professional services,0.071823314
+5500,Management of companies,0.245751165
+5610,Administrative & support services,0.127163628
+5620,Waste management & remediation services,0.127163628
+6100,Education,0.140995232
+6210,Ambulatory health care,0.090200445
+622H,Hospitals,0.090200445
+6230,Nursing & residential care,0.090200445
+6240,Social assistance,0.090200445
+711A,"Performing arts, etc",0.140995232
+7130,Amusement & recreation,0.140995232
+7210,Accommodation,0.244045022
+7220,Food & drink services,0.244045022
+8100,"Other services, except gov't",0.140995232
