@@ -53,6 +53,32 @@ def calcTauNC(calc):
     wmtr3 = sum((mtr3 * inc3 + mtr4 * inc4) * wgt) / sum((inc3 + inc4) * wgt)
     return (wmtr1, wmtr2, wmtr3)
 
+def calcTauInv(calc):
+    """
+    Calculates the effective marginal tax rate on each type of investment
+    income.
+    """
+    wgt = calc.array('s006')
+    # Interest income
+    inc1 = np.abs(calc.array('e00300'))
+    mtr1 = calc.mtr('e00300', calc_all_already_called=True)[2]
+    wmtr_int = sum(mtr1 * inc1 * wgt) / sum(inc1 * wgt)
+    # Dividend income
+    inc2 = np.abs(calc.array('e00650'))
+    inc3 = np.abs(calc.array('e00600') - inc2)
+    mtr2 = calc.mtr('e00650', calc_all_already_called=True)[2]
+    mtr3 = calc.mtr('e00600', calc_all_already_called=True)[2]
+    wmtr_div = sum((mtr2 * inc2 + mtr3 * inc3) * wgt) / sum((inc2 + inc3) * wgt)
+    # Short-term capital gains
+    inc4 = np.maximum(calc.array('p22250'), 0.)
+    mtr4 = calc.mtr('p22250', calc_all_already_called=True)[2]
+    wmtr_scg = sum(mtr4 * inc4 * wgt) / sum(inc4 * wgt)
+    # Long-term capital gains
+    inc5 = np.maximum(calc.array('p23250'), 0.)
+    mtr5 = calc.mtr('p23250', calc_all_already_called=True)[2]
+    wmtr_lcg = sum(mtr5 * inc5 * wgt) / sum(inc5 * wgt)
+    return (wmtr_int, wmtr_div, wmtr_scg, wmtr_lcg)
+
 
 # Create baseline
 calc_base = make_calculator(None, 2019)
@@ -69,12 +95,26 @@ calc_biden = make_calculator(param_biden['policy'], 2019)
 mtr_sp_base = np.zeros(10)
 mtr_pa_base = np.zeros(10)
 mtr_sc_base = np.zeros(10)
+mtr_int_base = np.zeros(10)
+mtr_div_base = np.zeros(10)
+mtr_scg_base = np.zeros(10)
+mtr_lcg_base = np.zeros(10)
+
 mtr_sp_extII = np.zeros(10)
 mtr_pa_extII = np.zeros(10)
 mtr_sc_extII = np.zeros(10)
+mtr_int_extII = np.zeros(10)
+mtr_div_extII = np.zeros(10)
+mtr_scg_extII = np.zeros(10)
+mtr_lcg_extII = np.zeros(10)
+
 mtr_sp_biden = np.zeros(10)
 mtr_pa_biden = np.zeros(10)
 mtr_sc_biden = np.zeros(10)
+mtr_int_biden = np.zeros(10)
+mtr_div_biden = np.zeros(10)
+mtr_scg_biden = np.zeros(10)
+mtr_lcg_biden = np.zeros(10)
 
 for i in range(10):
     # Advance each Calculator
@@ -84,19 +124,35 @@ for i in range(10):
     calc_extII.calc_all()
     calc_biden.increment_year()
     calc_biden.calc_all()
-    # Compute and save MTRs
-    mtrs1 = calcTauNC(calc_base)
-    mtr_sp_base[i] = mtrs1[0]
-    mtr_pa_base[i] = mtrs1[1]
-    mtr_sc_base[i] = mtrs1[2]
-    mtrs2 = calcTauNC(calc_extII)
-    mtr_sp_extII[i] = mtrs2[0]
-    mtr_pa_extII[i] = mtrs2[1]
-    mtr_sc_extII[i] = mtrs2[2]
-    mtrs3 = calcTauNC(calc_biden)
-    mtr_sp_biden[i] = mtrs3[0]
-    mtr_pa_biden[i] = mtrs3[1]
-    mtr_sc_biden[i] = mtrs3[2]
+    # Compute and save MTRs on pass-through business income
+    mtrb1 = calcTauNC(calc_base)
+    mtr_sp_base[i] = mtrb1[0]
+    mtr_pa_base[i] = mtrb1[1]
+    mtr_sc_base[i] = mtrb1[2]
+    mtrb2 = calcTauNC(calc_extII)
+    mtr_sp_extII[i] = mtrb2[0]
+    mtr_pa_extII[i] = mtrb2[1]
+    mtr_sc_extII[i] = mtrb2[2]
+    mtrb3 = calcTauNC(calc_biden)
+    mtr_sp_biden[i] = mtrb3[0]
+    mtr_pa_biden[i] = mtrb3[1]
+    mtr_sc_biden[i] = mtrb3[2]
+    # Compute and save MTRs on investment income
+    mtri1 = calcTauInv(calc_base)
+    mtr_int_base[i] = mtri1[0]
+    mtr_div_base[i] = mtri1[1]
+    mtr_scg_base[i] = mtri1[2]
+    mtr_lcg_base[i] = mtri1[3]
+    mtri2 = calcTauInv(calc_extII)
+    mtr_int_extII[i] = mtri2[0]
+    mtr_div_extII[i] = mtri2[1]
+    mtr_scg_extII[i] = mtri2[2]
+    mtr_lcg_extII[i] = mtri2[3]
+    mtri3 = calcTauInv(calc_biden)
+    mtr_int_biden[i] = mtri3[0]
+    mtr_div_biden[i] = mtri3[1]
+    mtr_scg_biden[i] = mtri3[2]
+    mtr_lcg_biden[i] = mtri3[3]
 
 # Update policy CSVs with MTRs
 pols_base = pd.read_csv('policy_baseline.csv')
@@ -107,21 +163,37 @@ pols_biden = pd.read_csv('policy_biden.csv')
 pols_base['taxrt_scorp'] = mtr_sc_base
 pols_base['taxrt_soleprop'] = mtr_sp_base
 pols_base['taxrt_partner'] = mtr_pa_base
+pols_base['taxrt_int'] = mtr_int_base
+pols_base['taxrt_div'] = mtr_div_base
+pols_base['taxrt_scg'] = mtr_scg_base
+pols_base['taxrt_lcg'] = mtr_lcg_base
 pols_base.to_csv('policy_baseline.csv', index=False)
 
 pols_extII['taxrt_scorp'] = mtr_sc_extII
 pols_extII['taxrt_soleprop'] = mtr_sp_extII
 pols_extII['taxrt_partner'] = mtr_pa_extII
+pols_extII['taxrt_int'] = mtr_int_extII
+pols_extII['taxrt_div'] = mtr_div_extII
+pols_extII['taxrt_scg'] = mtr_scg_extII
+pols_extII['taxrt_lcg'] = mtr_lcg_extII
 pols_extII.to_csv('policy_extendII.csv', index=False)
 
 pols_extAll['taxrt_scorp'] = mtr_sc_extII
 pols_extAll['taxrt_soleprop'] = mtr_sp_extII
 pols_extAll['taxrt_partner'] = mtr_pa_extII
+pols_extAll['taxrt_int'] = mtr_int_extII
+pols_extAll['taxrt_div'] = mtr_div_extII
+pols_extAll['taxrt_scg'] = mtr_scg_extII
+pols_extAll['taxrt_lcg'] = mtr_lcg_extII
 pols_extAll.to_csv('policy_extendAll.csv', index=False)
 
 pols_biden['taxrt_scorp'] = mtr_sc_biden
 pols_biden['taxrt_soleprop'] = mtr_sp_biden
 pols_biden['taxrt_partner'] = mtr_pa_biden
+pols_biden['taxrt_int'] = mtr_int_biden
+pols_biden['taxrt_div'] = mtr_div_biden
+pols_biden['taxrt_scg'] = mtr_scg_biden
+pols_biden['taxrt_lcg'] = mtr_lcg_biden
 pols_biden.to_csv('policy_biden.csv', index=False)
 
 

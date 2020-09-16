@@ -22,8 +22,6 @@ ndfr: Number of asset holding forms
 """
 INPUTPATH = 'data_files/'
 OUTPUTPATH = 'output/'
-# Number of detailed industries
-ndind=88
 # Number of industries
 nind=62
 # Numbers of asset types

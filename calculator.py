@@ -26,6 +26,7 @@ class Calculator():
         self.results_metr = dict()
         self.results_ucoc = dict()
         self.results_international = dict()
+        self.results_mettr = dict()
     
     def calc_all_basic(self, year):
         """
@@ -42,6 +43,10 @@ class Calculator():
         metr_scorp = np.zeros((ntype, nind))
         metr_soleprop = np.zeros((ntype, nind))
         metr_partner = np.zeros((ntype, nind))
+        mettr_ccorp = np.zeros((ntype, nind))
+        mettr_scorp = np.zeros((ntype, nind))
+        mettr_soleprop = np.zeros((ntype, nind))
+        mettr_partner = np.zeros((ntype, nind))
         ucoc_ccorp = np.zeros((ntype, nind))
         ucoc_scorp = np.zeros((ntype, nind))
         ucoc_soleprop = np.zeros((ntype, nind))
@@ -58,7 +63,7 @@ class Calculator():
         drules = self.pol.read_ccr(year)
         drulesf = self.pol.read_ccr('foreign')
         FDIIrt = self.pol.fetch('fdii_ex', year)
-        GILTIrt = self.pol.fetch('gilti_ex', year)
+        GILTIrt = self.pol.fetch('gilti_ex', year)        
         for i in range(ntype):
             ast = ast_codes[i]
             for j in range(nind):
@@ -114,10 +119,26 @@ class Calculator():
                 metr_scorp[i,j] = (coc_scorp[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
+                # Compute user cost of capital
                 ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
                 ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
                 ucoc_partner[i,j] = coc_partner[i,j] + delta
+                # Compute returns to savers
+                s_c = calcSc(self.parm.rd, self.parm.re, self.parm.pi, Delta_c,
+                             self.parm.shares, self.pol.fetch('taxrt_int', year),
+                             self.pol.fetch('taxrt_div', year),
+                             self.pol.fetch('taxrt_scg', year),
+                             self.pol.fetch('taxrt_lcg', year),
+                             self.pol.fetch('stepup', year))
+                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi, Delta_nc,
+                               self.parm.shares,
+                               self.pol.fetch('taxrt_int', year))
+                # Compute METTRs
+                mettr_ccorp[i,j] = (coc_ccorp[i,j] - s_c) / coc_ccorp[i,j]
+                mettr_scorp[i,j] = (coc_scorp[i,j] - s_nc) / coc_scorp[i,j]
+                mettr_soleprop[i,j] = (coc_soleprop[i,j] - s_nc) / coc_soleprop[i,j]
+                mettr_partner[i,j] = (coc_partner[i,j] - s_nc) / coc_partner[i,j]
                 # Compute EATRs
                 if ast[0:2] in ['EN', 'RD', 'AE']:
                     tang = 0
@@ -155,6 +176,9 @@ class Calculator():
         self.results_ucoc[str(year)] = results3
         results4 = {'domestic': eatr_dom, 'foreign': eatr_for}
         self.results_international[str(year)] = results4
+        results5 = {'corp': mettr_ccorp, 'scorp': mettr_scorp,
+                    'soleprop': mettr_soleprop, 'partner': mettr_partner}
+        self.results_mettr[str(year)] = results5
         self.calc_all_called = True
         
     def calc_all_forward(self, year):
@@ -172,6 +196,10 @@ class Calculator():
         metr_scorp = np.zeros((ntype, nind))
         metr_soleprop = np.zeros((ntype, nind))
         metr_partner = np.zeros((ntype, nind))
+        mettr_ccorp = np.zeros((ntype, nind))
+        mettr_scorp = np.zeros((ntype, nind))
+        mettr_soleprop = np.zeros((ntype, nind))
+        mettr_partner = np.zeros((ntype, nind))
         ucoc_ccorp = np.zeros((ntype, nind))
         ucoc_scorp = np.zeros((ntype, nind))
         ucoc_soleprop = np.zeros((ntype, nind))
@@ -242,10 +270,26 @@ class Calculator():
                 metr_scorp[i,j] = (coc_scorp[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
                 metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
+                # Compute user cost of capital
                 ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
                 ucoc_soleprop[i,j] = coc_soleprop[i,j] + delta
                 ucoc_partner[i,j] = coc_partner[i,j] + delta
+                # Compute returns to savers
+                s_c = calcSc(self.parm.rd, self.parm.re, self.parm.pi, Delta_c,
+                             self.parm.shares, self.pol.fetch('taxrt_int', year),
+                             self.pol.fetch('taxrt_div', year),
+                             self.pol.fetch('taxrt_scg', year),
+                             self.pol.fetch('taxrt_lcg', year),
+                             self.pol.fetch('stepup', year))
+                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi, Delta_nc,
+                               self.parm.shares,
+                               self.pol.fetch('taxrt_int', year))
+                # Compute METTRs
+                mettr_ccorp[i,j] = (coc_ccorp[i,j] - s_c) / coc_ccorp[i,j]
+                mettr_scorp[i,j] = (coc_scorp[i,j] - s_nc) / coc_scorp[i,j]
+                mettr_soleprop[i,j] = (coc_soleprop[i,j] - s_nc) / coc_soleprop[i,j]
+                mettr_partner[i,j] = (coc_partner[i,j] - s_nc) / coc_partner[i,j]
                 # Compute EATRs
                 if ast[0:2] in ['EN', 'RD', 'AE']:
                     tang = 0
@@ -283,4 +327,7 @@ class Calculator():
         self.results_ucoc[str(year)] = results3
         results4 = {'domestic': eatr_dom, 'foreign': eatr_for}
         self.results_international[str(year)] = results4
+        results5 = {'corp': mettr_ccorp, 'scorp': mettr_scorp,
+                    'soleprop': mettr_soleprop, 'partner': mettr_partner}
+        self.results_mettr[str(year)] = results5
         self.calc_all_called = True

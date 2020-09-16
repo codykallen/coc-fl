@@ -35,7 +35,17 @@ class Parameter():
         self.rd = self.rf + self.premD
         # Required return on equity
         self.re = self.rf + self.premE
-    
+        # Set shares for distribution of of investment income
+        self.shares = {'txshr_d_c': 0.523, # taxable share of corporate debt
+                       'txshr_d_nc': 0.763, # taxable share of pass-through debt
+                       'txshr_e': 0.572, # taxable share of corporate equity
+                       'divshr': 0.44, # dividend payout share
+                       'wt_scg': 0.034, # share of capital gains realized short-term
+                       'wt_lcg': 0.496, # share of capital gains realized long-term
+                       'h_lcg': 10.0, # holding period for long-term gains
+                       'h_xcg': 30.0} # holding period for gains held until death
+        assert self.shares['wt_scg'] + self.shares['wt_lcg'] <= 1.0
+        
     def read_depr(self):
         """
         Read in economic depreciation rates by asset type.

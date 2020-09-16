@@ -77,6 +77,10 @@ main_mtr_base = pd.DataFrame({'Category': catlist})
 main_mtr_extII = pd.DataFrame({'Category': catlist})
 main_mtr_extAll = pd.DataFrame({'Category': catlist})
 main_mtr_biden = pd.DataFrame({'Category': catlist})
+main_mettr_base = pd.DataFrame({'Category': catlist})
+main_mettr_extII = pd.DataFrame({'Category': catlist})
+main_mettr_extAll = pd.DataFrame({'Category': catlist})
+main_mettr_biden = pd.DataFrame({'Category': catlist})
 main_coc_base = pd.DataFrame({'Category': catlist})
 main_coc_extII = pd.DataFrame({'Category': catlist})
 main_coc_extAll = pd.DataFrame({'Category': catlist})
@@ -105,6 +109,11 @@ for year in range(2021, 2030):
     main_mtr_extII[str(year)] = res1_extII['METR']
     main_mtr_extAll[str(year)] = res1_extAll['METR']
     main_mtr_biden[str(year)] = res1_biden['METR']
+    # Store MTR results
+    main_mettr_base[str(year)] = res1_base['METTR']
+    main_mettr_extII[str(year)] = res1_extII['METTR']
+    main_mettr_extAll[str(year)] = res1_extAll['METTR']
+    main_mettr_biden[str(year)] = res1_biden['METTR']
     # Store CoC results
     main_coc_base[str(year)] = res1_base['CoC']
     main_coc_extII[str(year)] = res1_extII['CoC']
@@ -124,6 +133,12 @@ for year in range(2021, 2030):
     main_eatrf_extII[str(year)] = res1_extII['EATRf']
     main_eatrf_extAll[str(year)] = res1_extAll['EATRf']
     main_eatrf_biden[str(year)] = res1_biden['EATRf']
+    # Print coefficient of variation for CoC
+    if year in [2021, 2025, 2029]:
+        print('Base CoV: ', ob_base.cocVariation(year))
+        print('ExtII CoV: ', ob_extII.cocVariation(year))
+        print('ExtAll CoV: ', ob_extAll.cocVariation(year))
+        print('Biden CoV: ', ob_biden.cocVariation(year))
 
 # Save results to tables for combining later
 main_coc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'base' + '.csv', index=False)
@@ -134,6 +149,10 @@ main_mtr_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'base' + '.csv',
 main_mtr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extII' + '.csv', index=False)
 main_mtr_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extAll' + '.csv', index=False)
 main_mtr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'biden' + '.csv', index=False)
+main_mettr_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'base' + '.csv', index=False)
+main_mettr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'extII' + '.csv', index=False)
+main_mettr_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'extAll' + '.csv', index=False)
+main_mettr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'biden' + '.csv', index=False)
 main_ucoc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'base' + '.csv', index=False)
 main_ucoc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extII' + '.csv', index=False)
 main_ucoc_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extAll' + '.csv', index=False)

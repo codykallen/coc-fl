@@ -109,6 +109,10 @@ class OutputBuilder():
         mtr_scorp = self.calc.results_metr[str(year)]['scorp']
         mtr_soleprop = self.calc.results_metr[str(year)]['soleprop']
         mtr_partner = self.calc.results_metr[str(year)]['partner']
+        mettr_ccorp = self.calc.results_mettr[str(year)]['corp']
+        mettr_scorp = self.calc.results_mettr[str(year)]['scorp']
+        mettr_soleprop = self.calc.results_mettr[str(year)]['soleprop']
+        mettr_partner = self.calc.results_mettr[str(year)]['partner']
         ucoc_ccorp = self.calc.results_ucoc[str(year)]['corp']
         ucoc_scorp = self.calc.results_ucoc[str(year)]['scorp']
         ucoc_soleprop = self.calc.results_ucoc[str(year)]['soleprop']
@@ -119,6 +123,7 @@ class OutputBuilder():
         # Arrays for storing results
         coclist = np.zeros(9)
         mtrlist = np.zeros(9)
+        mettrlist = np.zeros(9)
         ucoclist = np.zeros(9)
         eatrdlist = np.zeros(9)
         eatrflist = np.zeros(9)
@@ -192,6 +197,41 @@ class OutputBuilder():
                        + mtr_partner[68:91,:] * stock_partner_arr[68:91,:]).sum()
                       / (stock_ccorp_arr[68:91,:] + stock_scorp_arr[68:91,:]
                          + stock_soleprop_arr[68:91,:] + stock_partner_arr[68:91,:]).sum())
+        # Store average results for METTR
+        mettrlist[0] = ((mettr_ccorp * stock_ccorp_arr
+                         + mettr_scorp * stock_scorp_arr
+                         + mettr_soleprop * stock_soleprop_arr
+                         + mettr_partner * stock_partner_arr).sum()
+                        / (stock_ccorp_arr + stock_scorp_arr
+                         + stock_soleprop_arr + stock_partner_arr).sum())
+        mettrlist[1] = (mettr_ccorp * stock_ccorp_arr).sum() / stock_ccorp_arr.sum()
+        mettrlist[2] = (mettr_scorp * stock_scorp_arr).sum() / stock_scorp_arr.sum()
+        mettrlist[3] = (mettr_soleprop * stock_soleprop_arr).sum() / stock_soleprop_arr.sum()
+        mettrlist[4] = (mettr_partner * stock_partner_arr).sum() / stock_partner_arr.sum()
+        mettrlist[5] = ((mettr_ccorp[0:37,:] * stock_ccorp_arr[0:37,:]
+                         + mettr_scorp[0:37,:] * stock_scorp_arr[0:37,:]
+                         + mettr_soleprop[0:37,:] * stock_soleprop_arr[0:37,:]
+                         + mettr_partner[0:37,:] * stock_partner_arr[0:37,:]).sum()
+                        / (stock_ccorp_arr[0:37,:] + stock_scorp_arr[0:37,:]
+                           + stock_soleprop_arr[0:37,:] + stock_partner_arr[0:37,:]).sum())
+        mettrlist[6] = ((mettr_ccorp[37:68,:] * stock_ccorp_arr[37:68,:]
+                         + mettr_scorp[37:68,:] * stock_scorp_arr[37:68,:]
+                         + mettr_soleprop[37:68,:] * stock_soleprop_arr[37:68,:]
+                         + mettr_partner[37:68,:] * stock_partner_arr[37:68,:]).sum()
+                        / (stock_ccorp_arr[37:68] + stock_scorp_arr[37:68,:]
+                           + stock_soleprop_arr[37:68,:] + stock_partner_arr[37:68,:]).sum())
+        mettrlist[7] = ((mettr_ccorp[91,:] * stock_ccorp_arr[91,:]
+                         + mettr_scorp[91,:] * stock_scorp_arr[91,:]
+                         + mettr_soleprop[91,:] * stock_soleprop_arr[91,:]
+                         + mettr_partner[91,:] * stock_partner_arr[91,:]).sum()
+                        / (stock_ccorp_arr[91,:] + stock_scorp_arr[91,:]
+                           + stock_soleprop_arr[91,:] + stock_partner_arr[91,:]).sum())
+        mettrlist[8] = ((mettr_ccorp[68:91,:] * stock_ccorp_arr[68:91,:]
+                         + mettr_scorp[68:91,:] * stock_scorp_arr[68:91,:]
+                         + mettr_soleprop[68:91,:] * stock_soleprop_arr[68:91,:]
+                         + mettr_partner[68:91,:] * stock_partner_arr[68:91,:]).sum()
+                        / (stock_ccorp_arr[68:91,:] + stock_scorp_arr[68:91,:]
+                           + stock_soleprop_arr[68:91,:] + stock_partner_arr[68:91,:]).sum())
         # Store average results for user cost of capital
         ucoclist[0] = ((ucoc_ccorp * stock_ccorp_arr
                         + ucoc_scorp * stock_scorp_arr
@@ -238,10 +278,48 @@ class OutputBuilder():
         eatrflist[7] = (eatr_f[91,:] * stock_ccorp_arr[91,:]).sum() / stock_ccorp_arr[91,:].sum()
         eatrdlist[8] = (eatr_d[68:91,:] * stock_ccorp_arr[68:91,:]).sum() / stock_ccorp_arr[68:91,:].sum()
         eatrflist[8] = (eatr_f[68:91,:] * stock_ccorp_arr[68:91,:]).sum() / stock_ccorp_arr[68:91,:].sum()
+        # Save and return results
         df1 = pd.DataFrame({'Category': catlist, 'CoC': coclist,
                             'METR': mtrlist, 'UCoC': ucoclist,
-                            'EATRd': eatrdlist, 'EATRf': eatrflist})
+                            'EATRd': eatrdlist, 'EATRf': eatrflist,
+                            'METTR': mettrlist})
         return df1
-
+    
+    def cocVariation(self, year):
+        """
+        Compute coefficient of variation for cost of capital.
+        Note: Must first run tabulate_main(year).
+        """
+        # Get average CoC
+        df1 = self.tabulate_main(year)
+        df1.set_index('Category', inplace=True)
+        coc = df1.loc[catlist[0], 'CoC']
+        # Extract asset weights
+        stock_ccorp_arr = self.stock_ccorp.to_numpy()
+        stock_scorp_arr = self.stock_scorp.to_numpy()
+        stock_soleprop_arr = self.stock_soleprop.to_numpy()
+        stock_partner_arr = self.stock_partner.to_numpy()
+        wgtarray = np.zeros((ntype, nind, 4))
+        wgtarray[:,:,0] = stock_ccorp_arr
+        wgtarray[:,:,1] = stock_scorp_arr
+        wgtarray[:,:,2] = stock_soleprop_arr
+        wgtarray[:,:,3] = stock_partner_arr
+        # Extract results by firm type
+        coc_ccorp = self.calc.results_coc[str(year)]['corp']
+        coc_scorp = self.calc.results_coc[str(year)]['scorp']
+        coc_soleprop = self.calc.results_coc[str(year)]['soleprop']
+        coc_partner = self.calc.results_coc[str(year)]['partner']
+        # Build array of squared deviations
+        vararray = np.zeros((ntype, nind, 4))
+        vararray[:,:,0] = (coc_ccorp - coc)**2
+        vararray[:,:,1] = (coc_scorp - coc)**2
+        vararray[:,:,2] = (coc_soleprop - coc)**2
+        vararray[:,:,3] = (coc_partner - coc)**2
+        # Compute variance
+        vcoc = (vararray * wgtarray).sum() / wgtarray.sum()
+        covcoc = vcoc**0.5 / coc
+        return covcoc
+        
+        
 
 
