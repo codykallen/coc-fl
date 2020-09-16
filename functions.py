@@ -408,6 +408,50 @@ def make_lists(poldf, ftype, syear, length=50): # taulist and philist
         philist[year-syear] = poldf.loc[min(year, 2029), 'intded_' + phiid]
     return (taulist, philist)
 
+def calcSc(rd, re, pi, Delta, shares, tau_int, tau_div, tau_scg, tau_lcg, stepup):
+    """
+    Calculate return to saving through corporations.
+        rd: Rate of return on debt (nominal)
+        re: Rate of return on equity (nominal)
+        pi: Inflation rate
+        shares: Dict() of holding shares (from Parameter class)
+        tau_int: Tax rate on interest income
+        tau_div: Tax rate on dividend income
+        tau_scg: Tax rate on short-term capital gains
+        tau_lcg: Tax rate on long-term capital gains
+        stepup: Indicator for whether step-up basis is used.
+    """
+    # After-tax return to lenders
+    sd = shares['txshr_d_c'] * rd * (1 - tau_int) + (1 - shares['txshr_d_c']) * rd - pi
+    # After-tax return through capital gains
+    if stepup == 1:
+        tau_xcg = 0.
+    else:
+        tau_xcg = tau_lcg
+    hl = shares['h_lcg']
+    hx = shares['h_xcg']
+    m = shares['divshr']
+    s_scg = re * (1 - tau_scg)
+    s_lcg = 1.0 / (hl * (1 - m)) * np.log(np.exp(hl * (1 - m) * re) * (1 - tau_lcg) + tau_lcg)
+    s_xcg = 1.0 / (hx * (1 - m)) * np.log(np.exp(hx * (1 - m) * re) * (1 - tau_xcg) + tau_xcg)
+    s_cg = shares['wt_scg'] * s_scg + shares['wt_lcg'] * s_lcg + (1 - shares['wt_scg'] - shares['wt_lcg']) * s_xcg - pi
+    # After-tax return through equity
+    se = shares['txshr_e'] * (m * re * (1 - tau_div) + (1 - m) * (s_cg + pi)) + (1 - shares['txshr_e']) * re - pi
+    s = Delta * sd + (1 - Delta) * se
+    return s
 
-
+def calcSnc(rd, re, pi, Delta, shares, tau_int):
+    """
+    Calculate return to saving through corporations.
+        rd: Rate of return on debt (nominal)
+        re: Rate of return on equity (nominal)
+        pi: Inflation rate
+        shares: Dict() of holding shares (from Parameter class)
+        tau_int: Tax rate on interest income
+    """
+    # After-tax return to lenders
+    sd = shares['txshr_d_nc'] * rd * (1 - tau_int) + (1 - shares['txshr_d_nc']) * rd - pi
+    se = re - pi
+    s = Delta * sd + (1 - Delta) * se
+    return s
 
