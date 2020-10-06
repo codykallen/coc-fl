@@ -99,9 +99,11 @@ inv_byform['coop'] = legal_inv.loc[79, '2019']
 
 # Read in IRS corporate data and extract asset info
 irs_corp = pd.read_excel(file_irsC, sheet_name='CRTAB06', header=13)
-irs_stock_corp = (irs_corp.loc[12, 1] - irs_corp.loc[13, 1] + irs_corp.loc[17, 1] - irs_corp.loc[18, 1])
+irs_stock_corp = (irs_corp.loc[12, 1] - irs_corp.loc[13, 1] +
+                  irs_corp.loc[17, 1] - irs_corp.loc[18, 1])
 irs_scorp = pd.read_excel(file_irsS, sheet_name='Table 7', header=6)
-irs_stock_scorp = (irs_corp.loc[13, 1] - irs_corp.loc[14, 1] + irs_corp.loc[18, 1] - irs_corp.loc[19, 1])
+irs_stock_scorp = (irs_corp.loc[13, 1] - irs_corp.loc[14, 1] +
+                   irs_corp.loc[18, 1] - irs_corp.loc[19, 1])
 
 # Update asset and investment for corporations
 stock_byform['scorp'] = stock_byform['corp'] * irs_stock_scorp / irs_stock_corp
@@ -115,7 +117,8 @@ inv_total = 0.0
 for ind in ind_codes:
     stock_total += sum(stock_data[ind])
     inv_total += sum(inv_data[ind])
-formlist = ['total', 'ccorp', 'scorp', 'sole prop', 'partner', 'households', 'nonprofit', 'coop']
+formlist = ['total', 'ccorp', 'scorp', 'sole prop', 'partner', 'households',
+            'nonprofit', 'coop']
 stocks = dict()
 invs = dict()
 for form in formlist:
@@ -133,11 +136,13 @@ for form in formlist:
 #   BEA Fixed Assets, Tables 5.1 and 5.7
 res_stk_scorp = 253.1 * irs_stock_scorp / irs_stock_corp
 res_stk_ccorp = 253.1 - res_stk_scorp
-res_stk_soleprop = 1893.2 * stock_byform['sole prop'] / (stock_byform['sole prop'] + stock_byform['partner'])
+res_stk_soleprop = (1893.2 * stock_byform['sole prop'] /
+                    (stock_byform['sole prop'] + stock_byform['partner']))
 res_stk_partner = 1893.2 - res_stk_soleprop
 res_inv_scorp = 10.4 * irs_stock_scorp / irs_stock_corp
 res_inv_ccorp = 10.4 - res_inv_scorp
-res_inv_soleprop = 70.6 * inv_byform['sole prop'] / (inv_byform['sole prop'] + inv_byform['partner'])
+res_inv_soleprop = (70.6 * inv_byform['sole prop'] /
+                    (inv_byform['sole prop'] + inv_byform['partner']))
 res_inv_partner = 70.6 - res_inv_soleprop
 
 stocks['ccorp'].append(pd.Series(name='RES'))

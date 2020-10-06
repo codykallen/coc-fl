@@ -113,7 +113,6 @@ mtr_div_base = np.zeros(10)
 mtr_scg_base = np.zeros(10)
 mtr_lcg_base = np.zeros(10)
 sub_slti_base = np.zeros(10)
-sub_sltp_base = np.zeros(10)
 
 mtr_sp_extII = np.zeros(10)
 mtr_pa_extII = np.zeros(10)
@@ -123,7 +122,6 @@ mtr_div_extII = np.zeros(10)
 mtr_scg_extII = np.zeros(10)
 mtr_lcg_extII = np.zeros(10)
 sub_slti_extII = np.zeros(10)
-sub_sltp_extII = np.zeros(10)
 
 mtr_sp_biden = np.zeros(10)
 mtr_pa_biden = np.zeros(10)
@@ -133,7 +131,6 @@ mtr_div_biden = np.zeros(10)
 mtr_scg_biden = np.zeros(10)
 mtr_lcg_biden = np.zeros(10)
 sub_slti_biden = np.zeros(10)
-sub_sltp_biden = np.zeros(10)
 
 for i in range(10):
     # Advance each Calculator
@@ -175,13 +172,10 @@ for i in range(10):
     # Compute and save marginal subsidies on state and local taxes
     sub1 = calcSubSLTax(calc_base)
     sub_slti_base[i] = sub1[0]
-    sub_sltp_base[i] = sub1[1]
     sub2 = calcSubSLTax(calc_extII)
     sub_slti_extII[i] = sub2[0]
-    sub_sltp_extII[i] = sub2[1]
     sub3 = calcSubSLTax(calc_biden)
     sub_slti_biden[i] = sub3[0]
-    sub_sltp_biden[i] = sub3[1]
     
 
 # Update policy CSVs with MTRs
@@ -198,7 +192,6 @@ pols_clbase['taxrt_div'] = mtr_div_base
 pols_clbase['taxrt_scg'] = mtr_scg_base
 pols_clbase['taxrt_lcg'] = mtr_lcg_base
 pols_clbase['sub_slti'] = sub_slti_base
-pols_clbase['sub_sltp'] = sub_sltp_base
 pols_clbase.to_csv('policy_baseline.csv', index=False)
 
 pols_extII['taxrt_scorp'] = mtr_sc_extII
@@ -209,7 +202,6 @@ pols_extII['taxrt_div'] = mtr_div_extII
 pols_extII['taxrt_scg'] = mtr_scg_extII
 pols_extII['taxrt_lcg'] = mtr_lcg_extII
 pols_extII['sub_slti'] = sub_slti_extII
-pols_extII['sub_sltp'] = sub_sltp_extII
 pols_extII.to_csv('policy_extendII.csv', index=False)
 
 pols_cpbase['taxrt_scorp'] = mtr_sc_extII
@@ -220,7 +212,6 @@ pols_cpbase['taxrt_div'] = mtr_div_extII
 pols_cpbase['taxrt_scg'] = mtr_scg_extII
 pols_cpbase['taxrt_lcg'] = mtr_lcg_extII
 pols_cpbase['sub_slti'] = sub_slti_extII
-pols_cpbase['sub_sltp'] = sub_sltp_extII
 pols_cpbase.to_csv('policy_currentPolicy.csv', index=False)
 
 pols_biden['taxrt_scorp'] = mtr_sc_biden
@@ -231,7 +222,6 @@ pols_biden['taxrt_div'] = mtr_div_biden
 pols_biden['taxrt_scg'] = mtr_scg_biden
 pols_biden['taxrt_lcg'] = mtr_lcg_biden
 pols_biden['sub_slti'] = sub_slti_biden
-pols_biden['sub_sltp'] = sub_sltp_biden
 pols_biden.to_csv('policy_biden.csv', index=False)
 
 
