@@ -1,7 +1,6 @@
 import copy
-import numpy as np
 import pandas as pd
-from config import *
+from config import INPUTPATH
 
 
 class Parameter():
@@ -48,7 +47,6 @@ class Parameter():
                        'wt_lcg': 0.496, # share of capital gains realized long-term
                        'h_lcg': 10.0, # holding period for long-term gains
                        'h_xcg': 30.0} # holding period for gains held until death
-        assert self.shares['wt_scg'] + self.shares['wt_lcg'] <= 1.0
         # Set state-level tax rates
         self.sltaxes = {'int': 0.0413, 'ndiv': 0.0421, 'qdiv': 0.0479,
                         'scg': 0.0457, 'lcg': 0.0467,
@@ -99,7 +97,27 @@ class Parameter():
         if 'forwardLooking' in pdict:
             assert type(pdict['forwardLooking']) is bool
             self.forwardLooking = pdict['forwardLooking']
-        
+        # Update dictionaries
+        if 'shares' in pdict:
+            assert type(pdict['shares']) is dict
+            for elem in pdict['shares']:
+                self.shares[elem] = pdict['shares'][elem]
+        if 'sltaxes' in pdict:
+            assert type(pdict['sltaxes']) is dict
+            for elem in pdict['sltaxes']:
+                self.sltaxes[elem] = pdict['sltaxes'][elem]
+        # Check that new parameters in dictionaries are acceptable
+        assert self.shares['txshr_d_c'] >= 0 and self.shares['txshr_d_c'] <= 1
+        assert self.shares['txshr_d_nc'] >= 0 and self.shares['txshr_d_nc'] <= 1
+        assert self.shares['txshr_e'] >= 0 and self.shares['txshr_e'] <= 1
+        assert self.shares['divshr'] >= 0 and self.shares['divshr'] <= 1
+        assert self.shares['wt_scg'] >= 0 and self.shares['wt_scg'] <= 1
+        assert self.shares['wt_lcg'] >= 0 and self.shares['wt_lcg'] <= 1
+        assert self.shares['wt_scg'] + self.shares['wt_lcg'] <= 1
+        assert self.shares['h_lcg'] >= 0
+        assert self.shares['h_xcg'] >= 0
+        for inctype in self.sltaxes:
+            assert self.sltaxes[inctype] >= 0 and self.sltaxes[inctype] <= 1
         
     def read_depr(self):
         """

@@ -1,11 +1,7 @@
 import copy
 import numpy as np
 import pandas as pd
-from policy import Policy
-from parameter import Parameter
-from config import *
-from functions import *
-from calculator import Calculator
+from config import OUTPUTPATH, ast_codes, ind_codes, catlist, ntype, nind
 
 class OutputBuilder():
     """
@@ -284,6 +280,37 @@ class OutputBuilder():
                             'EATRd': eatrdlist, 'EATRf': eatrflist,
                             'METTR': mettrlist})
         return df1
+    
+    def tabulate_main_multiyear(self, yearlist):
+        """
+        Run tabulate_main(year) for every year in yearlist, and
+        combine results. Export the combined results to CSVs.
+        """
+        # Create empty DataFrames to store results
+        mtr_res = pd.DataFrame({'Category': catlist})
+        mettr_res = pd.DataFrame({'Category': catlist})
+        coc_res = pd.DataFrame({'Category': catlist})
+        ucoc_res = pd.DataFrame({'Category': catlist})
+        eatrd_res = pd.DataFrame({'Category': catlist})
+        eatrf_res = pd.DataFrame({'Category': catlist})
+        # Tabulate for each year and store results
+        for year in yearlist:
+            res1_all = self.tabulate_main(year)
+            mtr_res[str(year)] = res1_all['METR']
+            mettr_res[str(year)] = res1_all['METTR']
+            coc_res[str(year)] = res1_all['CoC']
+            ucoc_res[str(year)] = res1_all['UCoC']
+            eatrd_res[str(year)] = res1_all['EATRd']
+            eatrf_res[str(year)] = res1_all['EATRf']
+        # Save results to tables for combining later
+        coc_res.to_csv(OUTPUTPATH + 'main/' + 'coc_' + self.key + '.csv', index=False)
+        mtr_res.to_csv(OUTPUTPATH + 'main/' + 'mtr_' + self.key + '.csv', index=False)
+        mettr_res.to_csv(OUTPUTPATH + 'main/' + 'mettr_' + self.key + '.csv', index=False)
+        ucoc_res.to_csv(OUTPUTPATH + 'main/' + 'ucoc_' + self.key + '.csv', index=False)
+        eatrd_res.to_csv(OUTPUTPATH + 'main/' + 'eatrd_' + self.key + '.csv', index=False)
+        eatrf_res.to_csv(OUTPUTPATH + 'main/' + 'eatrf_' + self.key + '.csv', index=False)
+
+        return None
     
     def cocVariation(self, year):
         """

@@ -1,32 +1,14 @@
 """
 Various quantities and relevant paths
 for use by classes.
-nform: Number of organizational types
-	0: Corporate business
-	1: Pass-through business
-	2: Owner-occupied housing
-	3: All businesses
-	4: Total for-profit
-	5: Total including nonprofits?
-nsfin: Number of sources of financing
-	0: New equity
-	1: Retained earnings
-	2: Typical equity mix
-	3: Debt
-	4: Combined
-ndfr: Number of asset holding forms
-	0: Fully taxable
-	1: Temporarily deferred
-	2: Nontaxable
-	3: Combined
 """
 INPUTPATH = 'data_files/'
 OUTPUTPATH = 'output/'
+
 # Number of industries
 nind=62
 # Numbers of asset types
 ntype = 92
-
 
 # List of industry codes (exclude Federal Reserve Banks)
 ind_codes = ['110C', '113F', '2110', '2120', '2130', '2200', '2300',

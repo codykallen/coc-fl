@@ -9,8 +9,7 @@ import os
 os.chdir('C:/Users/cody_/Documents/GitHub/coc-fl')
 import numpy as np
 import pandas as pd
-import tclocal
-from tclocal import *
+from tclocal import Policy, Records, Calculator
 
 puf_path = 'puf.csv'
 

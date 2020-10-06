@@ -1,10 +1,9 @@
 import copy
 import numpy as np
-import pandas as pd
-from policy import Policy
-from parameter import Parameter
-from config import *
-from functions import *
+from config import ntype, nind, ast_codes, ind_codes
+from functions import (calcCOC1, calcCOC2, calcSc, calcSnc,
+                       calcEATRd1, calcEATRf1, calcEATRd2, calcEATRf2,
+                       make_lists)
 
 class Calculator():
     """
@@ -77,7 +76,6 @@ class Calculator():
         # Potentially include state and local taxes
         if self.parm.include_slt:
             sub_slti = self.pol.fetch('sub_slti', year)
-            sub_sltp = self.pol.fetch('sub_sltp', year)
             tau_c += self.parm.sltaxes['corp'] * (1 - tau_c)
             tau_sc += self.parm.sltaxes['soleprop'] * (1 - sub_slti)
             tau_sp += self.parm.sltaxes['partner'] * (1 - sub_slti)
@@ -88,7 +86,9 @@ class Calculator():
             tau_prop_p = self.parm.sltaxes['property'] * (1 - tau_p)
         else:
             tau_prop_c = 0.0
-            tau_prop_nc = 0.0
+            tau_prop_sc = 0.0
+            tau_prop_sp = 0.0
+            tau_prop_p = 0.0
         # Run calculations
         for i in range(ntype):
             ast = ast_codes[i]

@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 
 
 def calcD_db(r, L, n):
