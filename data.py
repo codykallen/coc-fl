@@ -23,7 +23,7 @@ Things to do:
 import copy
 import numpy as np
 import pandas as pd
-from config import *
+from config import INPUTPATH, OUTPUTPATH, ind_codes
 
 # Read in and store data files
 file_stock_AI = pd.ExcelFile(INPUTPATH + 'BEA/detailnonres_stk1.xlsx')
