@@ -537,7 +537,7 @@ class Calculator():
                            'p23250', 'e18500',
                            'e19200', 'e26270',
                            'e19800', 'e20100',
-                           'k1bx14p']
+                           'k1bx14p', 'e18400']
 
     def mtr(self, variable_str='e00200p',
             negative_finite_diff=False,
@@ -624,7 +624,8 @@ class Calculator():
         'e26270',  S-corporation/partnership income (also included in e02000);
         'e19800',  Charity cash contributions;
         'e20100',  Charity non-cash contributions;
-        'k1bx14p', Partnership income (also included in e26270 and e02000).
+        'k1bx14p', Partnership income (also included in e26270 and e02000);
+        'e18400', 'Schedule A state and local taxes paid.
         """
         # pylint: disable=too-many-arguments,too-many-statements
         # pylint: disable=too-many-locals,too-many-branches

@@ -289,17 +289,17 @@ def calcT(r, pi, delta, taulist):
     return T
 
 def calcCOC1(r, pi, rd, delta, Delta, tau, phi,
-             method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+             method, itcrt, itcdb, itclife, s179, bonus, life, accl, tau_prop):
     """
     Calculate cost of capital assuming constant tax rates.
     """
     Z = calcZ1(method, r, tau, itcrt, itcdb, itclife, s179, bonus, pi, delta, life, accl)
     F = calcF1(r, rd, pi, delta, Delta, tau, phi)
-    rho = (1 - Z - F) / (1 - tau) * (r - pi + delta) - delta
+    rho = (1 - Z - F) / (1 - tau) * (r - pi + delta) - delta + tau_prop
     return rho
 
 def calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
-             method, itcrt, itcdb, itclife, s179, bonus, life, accl,
+             method, itcrt, itcdb, itclife, s179, bonus, life, accl, taulist_prop,
              length = 50):
     """
     Calculate cost of capital allowing for tax rates that vary by year.
@@ -307,11 +307,12 @@ def calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
     Z = calcZ2(method, r, taulist, itcrt, itcdb, itclife, s179, bonus, pi, delta, life, accl, length)
     F = calcF2(r, rd, pi, delta, Delta, taulist, philist, length)
     T = calcT(r, pi, delta, taulist)
-    rho = (1 - Z - F) / (1 - T) * (r - pi + delta) - delta
+    Tp = calcT(r, pi, delta, taulist_prop)
+    rho = (1 - Z - F) / (1 - T) * (r - pi + delta) - delta + Tp
     return rho
 
 def calcEATRd1(r, pi, rd, delta, Delta, tau, phi, exFDII, tang, p,
-               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl, tau_prop):
     """
     Calculate EATR on domestic investment with foreign sales,
     assuming constant tax rates.
@@ -324,12 +325,12 @@ def calcEATRd1(r, pi, rd, delta, Delta, tau, phi, exFDII, tang, p,
     assert exFDII >= 0
     assert exFDII <= 1
     coc = calcCOC1(r, pi, rd, delta, Delta, tau, phi,
-                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl, tau_prop)
     eatr = (coc - r + pi) / p + (p - coc) / p * tau - (p - 0.1*tang) / p * exFDII * tau
     return eatr
 
 def calcEATRd2(r, pi, rd, delta, Delta, taulist, philist, exFDII, tang, p,
-               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl, taulist_prop):
     """
     Calculate EATR on domestic investment with foreign sales,
     allowing for tax rates that vary by year.
@@ -342,13 +343,13 @@ def calcEATRd2(r, pi, rd, delta, Delta, taulist, philist, exFDII, tang, p,
     assert exFDII >= 0
     assert exFDII <= 1
     coc = calcCOC2(r, pi, rd, delta, Delta, taulist, philist,
-                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl, taulist_prop)
     T = calcT(r, pi, delta, taulist)
     eatr = (coc - r + pi) / p + (p - coc) / p * T - (p - 0.1*tang) / p * exFDII * T
     return eatr
 
 def calcEATRf1(r, pi, rd, delta, Delta, tau, exGILTI, tang, p, tauf,
-               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl, tau_prop):
     """
     Calculate EATR on domestic investment with foreign sales,
     assuming constant tax rates.
@@ -362,12 +363,12 @@ def calcEATRf1(r, pi, rd, delta, Delta, tau, exGILTI, tang, p, tauf,
     assert exGILTI >= 0
     assert exGILTI <= 1
     coc = calcCOC1(r, pi, rd, delta, Delta, tauf, 1.0,
-                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl, 0.0)
     eatr = (coc - r + pi) / p + (p - coc) / p * tauf + (p - 0.1*tang) / p * max(tau * (1.0 - exGILTI) - 0.8*tauf, 0)
     return eatr
 
 def calcEATRf2(r, pi, rd, delta, Delta, taulist, exGILTI, tang, p, tauf,
-               method, itcrt, itcdb, itclife, s179, bonus, life, accl):
+               method, itcrt, itcdb, itclife, s179, bonus, life, accl, taulist_prop):
     """
     Calculate EATR on domestic investment with foreign sales,
     assuming constant tax rates.
@@ -381,7 +382,7 @@ def calcEATRf2(r, pi, rd, delta, Delta, taulist, exGILTI, tang, p, tauf,
     assert exGILTI >= 0
     assert exGILTI <= 1
     coc = calcCOC1(r, pi, rd, delta, Delta, tauf, 1.0,
-                   method, itcrt, itcdb, itclife, s179, bonus, life, accl)
+                   method, itcrt, itcdb, itclife, s179, bonus, life, accl, 0.0)
     T = calcT(r, pi, delta, taulist)
     eatr = (coc - r + pi) / p + (p - coc) / p * tauf + (p - 0.1*tang) / p * max(T * (1.0 - exGILTI) - 0.8*tauf, 0)
     return eatr
@@ -393,7 +394,7 @@ def make_lists(poldf, ftype, syear, length=50): # taulist and philist
         ftype: type of firm
         syear: year to begin array
     """
-    assert ftype in ['ccorp', 'scorp', 'soleprop', 'partner']
+    assert ftype in ['ccorp', 'scorp', 'soleprop', 'partner', 'slti', 'sltp']
     assert syear >= 2020
     assert type(length) is int
     assert length >= 1
@@ -401,10 +402,14 @@ def make_lists(poldf, ftype, syear, length=50): # taulist and philist
         phiid = 'c'
     else:
         phiid = 'nc'
+    if ftype in ['slti', 'sltp']:
+        rtype= 'sub_'
+    else:
+        rtype = 'taxrt_'
     taulist = np.zeros(length)
     philist = np.zeros(length)
     for year in range(syear, syear + length):
-        taulist[year-syear] = poldf.loc[min(year, 2029), 'taxrt_' + ftype]
+        taulist[year-syear] = poldf.loc[min(year, 2029), rtype + ftype]
         philist[year-syear] = poldf.loc[min(year, 2029), 'intded_' + phiid]
     return (taulist, philist)
 

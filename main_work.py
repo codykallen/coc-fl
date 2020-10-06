@@ -135,10 +135,10 @@ for year in range(2021, 2030):
     main_eatrf_biden[str(year)] = res1_biden['EATRf']
     # Print coefficient of variation for CoC
     if year in [2021, 2025, 2029]:
-        print('Base CoV: ', ob_base.cocVariation(year))
-        print('ExtII CoV: ', ob_extII.cocVariation(year))
-        print('ExtAll CoV: ', ob_extAll.cocVariation(year))
-        print('Biden CoV: ', ob_biden.cocVariation(year))
+        print('Base StD: ', ob_base.cocVariation(year))
+        print('ExtII StD: ', ob_extII.cocVariation(year))
+        print('ExtAll StD: ', ob_extAll.cocVariation(year))
+        print('Biden StD: ', ob_biden.cocVariation(year))
 
 # Save results to tables for combining later
 main_coc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'base' + '.csv', index=False)

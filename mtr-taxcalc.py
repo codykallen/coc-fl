@@ -79,6 +79,20 @@ def calcTauInv(calc):
     wmtr_lcg = sum(mtr5 * inc5 * wgt) / sum(inc5 * wgt)
     return (wmtr_int, wmtr_div, wmtr_scg, wmtr_lcg)
 
+def calcSubSLTax(calc):
+    """
+    Calculates the marginal federal tax subsidies from the deductibility of
+    state and local income and property taxes.
+    """
+    wgt = calc.array('s006')
+    taxi = calc.array('e18400')
+    taxp = calc.array('e18500')
+    mtri = calc.mtr('e18400', calc_all_already_called=True)[2]
+    mtrp = calc.mtr('e18500', calc_all_already_called=True)[2]
+    wsubi = -sum(mtri * taxi * wgt) / sum(taxi * wgt)
+    wsubp = -sum(mtrp * taxp * wgt) / sum(taxp * wgt)
+    return (wsubi, wsubp)
+
 
 # Create baseline
 calc_base = make_calculator(None, 2019)
@@ -99,6 +113,8 @@ mtr_int_base = np.zeros(10)
 mtr_div_base = np.zeros(10)
 mtr_scg_base = np.zeros(10)
 mtr_lcg_base = np.zeros(10)
+sub_slti_base = np.zeros(10)
+sub_sltp_base = np.zeros(10)
 
 mtr_sp_extII = np.zeros(10)
 mtr_pa_extII = np.zeros(10)
@@ -107,6 +123,8 @@ mtr_int_extII = np.zeros(10)
 mtr_div_extII = np.zeros(10)
 mtr_scg_extII = np.zeros(10)
 mtr_lcg_extII = np.zeros(10)
+sub_slti_extII = np.zeros(10)
+sub_sltp_extII = np.zeros(10)
 
 mtr_sp_biden = np.zeros(10)
 mtr_pa_biden = np.zeros(10)
@@ -115,6 +133,8 @@ mtr_int_biden = np.zeros(10)
 mtr_div_biden = np.zeros(10)
 mtr_scg_biden = np.zeros(10)
 mtr_lcg_biden = np.zeros(10)
+sub_slti_biden = np.zeros(10)
+sub_sltp_biden = np.zeros(10)
 
 for i in range(10):
     # Advance each Calculator
@@ -153,6 +173,17 @@ for i in range(10):
     mtr_div_biden[i] = mtri3[1]
     mtr_scg_biden[i] = mtri3[2]
     mtr_lcg_biden[i] = mtri3[3]
+    # Compute and save marginal subsidies on state and local taxes
+    sub1 = calcSubSLTax(calc_base)
+    sub_slti_base[i] = sub1[0]
+    sub_sltp_base[i] = sub1[1]
+    sub2 = calcSubSLTax(calc_extII)
+    sub_slti_extII[i] = sub2[0]
+    sub_sltp_extII[i] = sub2[1]
+    sub3 = calcSubSLTax(calc_biden)
+    sub_slti_biden[i] = sub3[0]
+    sub_sltp_biden[i] = sub3[1]
+    
 
 # Update policy CSVs with MTRs
 pols_base = pd.read_csv('policy_baseline.csv')
@@ -167,6 +198,8 @@ pols_base['taxrt_int'] = mtr_int_base
 pols_base['taxrt_div'] = mtr_div_base
 pols_base['taxrt_scg'] = mtr_scg_base
 pols_base['taxrt_lcg'] = mtr_lcg_base
+pols_base['sub_slti'] = sub_slti_base
+pols_base['sub_sltp'] = sub_sltp_base
 pols_base.to_csv('policy_baseline.csv', index=False)
 
 pols_extII['taxrt_scorp'] = mtr_sc_extII
@@ -176,6 +209,8 @@ pols_extII['taxrt_int'] = mtr_int_extII
 pols_extII['taxrt_div'] = mtr_div_extII
 pols_extII['taxrt_scg'] = mtr_scg_extII
 pols_extII['taxrt_lcg'] = mtr_lcg_extII
+pols_extII['sub_slti'] = sub_slti_extII
+pols_extII['sub_sltp'] = sub_sltp_extII
 pols_extII.to_csv('policy_extendII.csv', index=False)
 
 pols_extAll['taxrt_scorp'] = mtr_sc_extII
@@ -185,6 +220,8 @@ pols_extAll['taxrt_int'] = mtr_int_extII
 pols_extAll['taxrt_div'] = mtr_div_extII
 pols_extAll['taxrt_scg'] = mtr_scg_extII
 pols_extAll['taxrt_lcg'] = mtr_lcg_extII
+pols_extAll['sub_slti'] = sub_slti_extII
+pols_extAll['sub_sltp'] = sub_sltp_extII
 pols_extAll.to_csv('policy_extendAll.csv', index=False)
 
 pols_biden['taxrt_scorp'] = mtr_sc_biden
@@ -194,6 +231,8 @@ pols_biden['taxrt_int'] = mtr_int_biden
 pols_biden['taxrt_div'] = mtr_div_biden
 pols_biden['taxrt_scg'] = mtr_scg_biden
 pols_biden['taxrt_lcg'] = mtr_lcg_biden
+pols_biden['sub_slti'] = sub_slti_biden
+pols_biden['sub_sltp'] = sub_sltp_biden
 pols_biden.to_csv('policy_biden.csv', index=False)
 
 

@@ -317,8 +317,8 @@ class OutputBuilder():
         vararray[:,:,3] = (coc_partner - coc)**2
         # Compute variance
         vcoc = (vararray * wgtarray).sum() / wgtarray.sum()
-        covcoc = vcoc**0.5 / coc
-        return covcoc
+        sdcoc = vcoc**0.5
+        return sdcoc
         
         
 
