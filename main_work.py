@@ -22,23 +22,23 @@ Note: Before running the following, make sure to execute the code in
 """
 
 # Whether to look forward or to use naive equations
-eqstyle = 'forward'
+eqstyle = 'naive'
 assert eqstyle in ['naive', 'forward']
 
-# Current law baseline
-pol_base = Policy()
-parm_base = Parameter()
-calc_base = Calculator(parm_base, pol_base)
+# Current law
+pol_clbase = Policy()
+parm_clbase = Parameter()
+calc_clbase = Calculator(parm_clbase, pol_clbase)
 
 # Extension of individual income tax parameters
 pol_extII = Policy('policy_extendII.csv')
 parm_extII = Parameter()
 calc_extII = Calculator(parm_extII, pol_extII)
 
-# Extension of all TCJA tax parameters
-pol_extAll = Policy('policy_extendAll.csv')
-parm_extAll = Parameter()
-calc_extAll = Calculator(parm_extAll, pol_extAll)
+# Extension of all current TCJA tax parameters (current policy baseline)
+pol_cpbase = Policy('policy_currentPolicy.csv')
+parm_cpbase = Parameter()
+calc_cpbase = Calculator(parm_cpbase, pol_cpbase)
 
 # Biden tax plan
 pol_biden = Policy('policy_biden.csv')
@@ -49,121 +49,121 @@ calc_biden = Calculator(parm_biden, pol_biden)
 # Calculate results for year year
 for year in range(2021, 2030):
     if eqstyle == 'naive':
-        calc_base.calc_all_basic(year)
+        calc_clbase.calc_all_basic(year)
         calc_extII.calc_all_basic(year)
-        calc_extAll.calc_all_basic(year)
+        calc_cpbase.calc_all_basic(year)
         calc_biden.calc_all_basic(year)
     else:
-        calc_base.calc_all_forward(year)
+        calc_clbase.calc_all_forward(year)
         calc_extII.calc_all_forward(year)
-        calc_extAll.calc_all_forward(year)
+        calc_cpbase.calc_all_forward(year)
         calc_biden.calc_all_forward(year)
 
 # Create objects to store results
-ob_base = OutputBuilder(calc_base, 'base')
+ob_clbase = OutputBuilder(calc_clbase, 'clbase')
 ob_extII = OutputBuilder(calc_extII, 'extII')
-ob_extAll = OutputBuilder(calc_extAll, 'extAll')
+ob_cpbase = OutputBuilder(calc_cpbase, 'cpbase')
 ob_biden = OutputBuilder(calc_biden, 'biden')
 
 
 # Store raw output for 2021
-ob_base.store_raw(2021)
+ob_clbase.store_raw(2021)
 ob_extII.store_raw(2021)
-ob_extAll.store_raw(2021)
+ob_cpbase.store_raw(2021)
 ob_biden.store_raw(2021)
 
 # Tabulate main results by year
-main_mtr_base = pd.DataFrame({'Category': catlist})
+main_mtr_clbase = pd.DataFrame({'Category': catlist})
 main_mtr_extII = pd.DataFrame({'Category': catlist})
-main_mtr_extAll = pd.DataFrame({'Category': catlist})
+main_mtr_cpbase = pd.DataFrame({'Category': catlist})
 main_mtr_biden = pd.DataFrame({'Category': catlist})
-main_mettr_base = pd.DataFrame({'Category': catlist})
+main_mettr_clbase = pd.DataFrame({'Category': catlist})
 main_mettr_extII = pd.DataFrame({'Category': catlist})
-main_mettr_extAll = pd.DataFrame({'Category': catlist})
+main_mettr_cpbase = pd.DataFrame({'Category': catlist})
 main_mettr_biden = pd.DataFrame({'Category': catlist})
-main_coc_base = pd.DataFrame({'Category': catlist})
+main_coc_clbase = pd.DataFrame({'Category': catlist})
 main_coc_extII = pd.DataFrame({'Category': catlist})
-main_coc_extAll = pd.DataFrame({'Category': catlist})
+main_coc_cpbase = pd.DataFrame({'Category': catlist})
 main_coc_biden = pd.DataFrame({'Category': catlist})
-main_ucoc_base = pd.DataFrame({'Category': catlist})
+main_ucoc_clbase = pd.DataFrame({'Category': catlist})
 main_ucoc_extII = pd.DataFrame({'Category': catlist})
-main_ucoc_extAll = pd.DataFrame({'Category': catlist})
+main_ucoc_cpbase = pd.DataFrame({'Category': catlist})
 main_ucoc_biden = pd.DataFrame({'Category': catlist})
-main_eatrd_base = pd.DataFrame({'Category': catlist})
+main_eatrd_clbase = pd.DataFrame({'Category': catlist})
 main_eatrd_extII = pd.DataFrame({'Category': catlist})
-main_eatrd_extAll = pd.DataFrame({'Category': catlist})
+main_eatrd_cpbase = pd.DataFrame({'Category': catlist})
 main_eatrd_biden = pd.DataFrame({'Category': catlist})
-main_eatrf_base = pd.DataFrame({'Category': catlist})
+main_eatrf_clbase = pd.DataFrame({'Category': catlist})
 main_eatrf_extII = pd.DataFrame({'Category': catlist})
-main_eatrf_extAll = pd.DataFrame({'Category': catlist})
+main_eatrf_cpbase = pd.DataFrame({'Category': catlist})
 main_eatrf_biden = pd.DataFrame({'Category': catlist})
 
 for year in range(2021, 2030):
     # Run tabulations
-    res1_base = ob_base.tabulate_main(year)
+    res1_clbase = ob_clbase.tabulate_main(year)
     res1_extII = ob_extII.tabulate_main(year)
-    res1_extAll = ob_extAll.tabulate_main(year)
+    res1_cpbase = ob_cpbase.tabulate_main(year)
     res1_biden = ob_biden.tabulate_main(year)
     # Store MTR results
-    main_mtr_base[str(year)] = res1_base['METR']
+    main_mtr_clbase[str(year)] = res1_clbase['METR']
     main_mtr_extII[str(year)] = res1_extII['METR']
-    main_mtr_extAll[str(year)] = res1_extAll['METR']
+    main_mtr_cpbase[str(year)] = res1_cpbase['METR']
     main_mtr_biden[str(year)] = res1_biden['METR']
     # Store MTR results
-    main_mettr_base[str(year)] = res1_base['METTR']
+    main_mettr_clbase[str(year)] = res1_clbase['METTR']
     main_mettr_extII[str(year)] = res1_extII['METTR']
-    main_mettr_extAll[str(year)] = res1_extAll['METTR']
+    main_mettr_cpbase[str(year)] = res1_cpbase['METTR']
     main_mettr_biden[str(year)] = res1_biden['METTR']
     # Store CoC results
-    main_coc_base[str(year)] = res1_base['CoC']
+    main_coc_clbase[str(year)] = res1_clbase['CoC']
     main_coc_extII[str(year)] = res1_extII['CoC']
-    main_coc_extAll[str(year)] = res1_extAll['CoC']
+    main_coc_cpbase[str(year)] = res1_cpbase['CoC']
     main_coc_biden[str(year)] = res1_biden['CoC']
     # Store user CoC results
-    main_ucoc_base[str(year)] = res1_base['UCoC']
+    main_ucoc_clbase[str(year)] = res1_clbase['UCoC']
     main_ucoc_extII[str(year)] = res1_extII['UCoC']
-    main_ucoc_extAll[str(year)] = res1_extAll['UCoC']
+    main_ucoc_cpbase[str(year)] = res1_cpbase['UCoC']
     main_ucoc_biden[str(year)] = res1_biden['UCoC']
     # Store EATR results
-    main_eatrd_base[str(year)] = res1_base['EATRd']
+    main_eatrd_clbase[str(year)] = res1_clbase['EATRd']
     main_eatrd_extII[str(year)] = res1_extII['EATRd']
-    main_eatrd_extAll[str(year)] = res1_extAll['EATRd']
+    main_eatrd_cpbase[str(year)] = res1_cpbase['EATRd']
     main_eatrd_biden[str(year)] = res1_biden['EATRd']
-    main_eatrf_base[str(year)] = res1_base['EATRf']
+    main_eatrf_clbase[str(year)] = res1_clbase['EATRf']
     main_eatrf_extII[str(year)] = res1_extII['EATRf']
-    main_eatrf_extAll[str(year)] = res1_extAll['EATRf']
+    main_eatrf_cpbase[str(year)] = res1_cpbase['EATRf']
     main_eatrf_biden[str(year)] = res1_biden['EATRf']
     # Print coefficient of variation for CoC
     if year in [2021, 2025, 2029]:
-        print('Base StD: ', ob_base.cocVariation(year))
+        print('Base StD: ', ob_clbase.cocVariation(year))
         print('ExtII StD: ', ob_extII.cocVariation(year))
-        print('ExtAll StD: ', ob_extAll.cocVariation(year))
+        print('ExtAll StD: ', ob_cpbase.cocVariation(year))
         print('Biden StD: ', ob_biden.cocVariation(year))
 
 # Save results to tables for combining later
-main_coc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'base' + '.csv', index=False)
+main_coc_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'clbase' + '.csv', index=False)
 main_coc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'extII' + '.csv', index=False)
-main_coc_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'extAll' + '.csv', index=False)
+main_coc_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'cpbase' + '.csv', index=False)
 main_coc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'biden' + '.csv', index=False)
-main_mtr_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'base' + '.csv', index=False)
+main_mtr_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'clbase' + '.csv', index=False)
 main_mtr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extII' + '.csv', index=False)
-main_mtr_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extAll' + '.csv', index=False)
+main_mtr_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'cpbase' + '.csv', index=False)
 main_mtr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'biden' + '.csv', index=False)
-main_mettr_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'base' + '.csv', index=False)
+main_mettr_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'clbase' + '.csv', index=False)
 main_mettr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'extII' + '.csv', index=False)
-main_mettr_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'extAll' + '.csv', index=False)
+main_mettr_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'cpbase' + '.csv', index=False)
 main_mettr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'biden' + '.csv', index=False)
-main_ucoc_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'base' + '.csv', index=False)
+main_ucoc_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'clbase' + '.csv', index=False)
 main_ucoc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extII' + '.csv', index=False)
-main_ucoc_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extAll' + '.csv', index=False)
+main_ucoc_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'cpbase' + '.csv', index=False)
 main_ucoc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'biden' + '.csv', index=False)
-main_eatrd_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'base' + '.csv', index=False)
+main_eatrd_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'clbase' + '.csv', index=False)
 main_eatrd_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'extII' + '.csv', index=False)
-main_eatrd_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'extAll' + '.csv', index=False)
+main_eatrd_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'cpbase' + '.csv', index=False)
 main_eatrd_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'biden' + '.csv', index=False)
-main_eatrf_base.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'base' + '.csv', index=False)
+main_eatrf_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'clbase' + '.csv', index=False)
 main_eatrf_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'extII' + '.csv', index=False)
-main_eatrf_extAll.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'extAll' + '.csv', index=False)
+main_eatrf_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'cpbase' + '.csv', index=False)
 main_eatrf_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'biden' + '.csv', index=False)
 
 

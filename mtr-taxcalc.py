@@ -186,21 +186,21 @@ for i in range(10):
     
 
 # Update policy CSVs with MTRs
-pols_base = pd.read_csv('policy_baseline.csv')
+pols_clbase = pd.read_csv('policy_baseline.csv')
 pols_extII = pd.read_csv('policy_extendII.csv')
-pols_extAll = pd.read_csv('policy_extendAll.csv')
+pols_cpbase = pd.read_csv('policy_currentPolicy.csv')
 pols_biden = pd.read_csv('policy_biden.csv')
 
-pols_base['taxrt_scorp'] = mtr_sc_base
-pols_base['taxrt_soleprop'] = mtr_sp_base
-pols_base['taxrt_partner'] = mtr_pa_base
-pols_base['taxrt_int'] = mtr_int_base
-pols_base['taxrt_div'] = mtr_div_base
-pols_base['taxrt_scg'] = mtr_scg_base
-pols_base['taxrt_lcg'] = mtr_lcg_base
-pols_base['sub_slti'] = sub_slti_base
-pols_base['sub_sltp'] = sub_sltp_base
-pols_base.to_csv('policy_baseline.csv', index=False)
+pols_clbase['taxrt_scorp'] = mtr_sc_base
+pols_clbase['taxrt_soleprop'] = mtr_sp_base
+pols_clbase['taxrt_partner'] = mtr_pa_base
+pols_clbase['taxrt_int'] = mtr_int_base
+pols_clbase['taxrt_div'] = mtr_div_base
+pols_clbase['taxrt_scg'] = mtr_scg_base
+pols_clbase['taxrt_lcg'] = mtr_lcg_base
+pols_clbase['sub_slti'] = sub_slti_base
+pols_clbase['sub_sltp'] = sub_sltp_base
+pols_clbase.to_csv('policy_baseline.csv', index=False)
 
 pols_extII['taxrt_scorp'] = mtr_sc_extII
 pols_extII['taxrt_soleprop'] = mtr_sp_extII
@@ -213,16 +213,16 @@ pols_extII['sub_slti'] = sub_slti_extII
 pols_extII['sub_sltp'] = sub_sltp_extII
 pols_extII.to_csv('policy_extendII.csv', index=False)
 
-pols_extAll['taxrt_scorp'] = mtr_sc_extII
-pols_extAll['taxrt_soleprop'] = mtr_sp_extII
-pols_extAll['taxrt_partner'] = mtr_pa_extII
-pols_extAll['taxrt_int'] = mtr_int_extII
-pols_extAll['taxrt_div'] = mtr_div_extII
-pols_extAll['taxrt_scg'] = mtr_scg_extII
-pols_extAll['taxrt_lcg'] = mtr_lcg_extII
-pols_extAll['sub_slti'] = sub_slti_extII
-pols_extAll['sub_sltp'] = sub_sltp_extII
-pols_extAll.to_csv('policy_extendAll.csv', index=False)
+pols_cpbase['taxrt_scorp'] = mtr_sc_extII
+pols_cpbase['taxrt_soleprop'] = mtr_sp_extII
+pols_cpbase['taxrt_partner'] = mtr_pa_extII
+pols_cpbase['taxrt_int'] = mtr_int_extII
+pols_cpbase['taxrt_div'] = mtr_div_extII
+pols_cpbase['taxrt_scg'] = mtr_scg_extII
+pols_cpbase['taxrt_lcg'] = mtr_lcg_extII
+pols_cpbase['sub_slti'] = sub_slti_extII
+pols_cpbase['sub_sltp'] = sub_sltp_extII
+pols_cpbase.to_csv('policy_currentPolicy.csv', index=False)
 
 pols_biden['taxrt_scorp'] = mtr_sc_biden
 pols_biden['taxrt_soleprop'] = mtr_sp_biden
