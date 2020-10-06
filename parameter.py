@@ -128,7 +128,8 @@ class Parameter():
         depr1.drop(['Asset'], axis=1, inplace=True)
         # Drop unwanted categories
         depr1.drop([28, 36, 56, 89, 90, 97, 98], axis=0, inplace=True)
-        depr1.rename({'Code': 'asset', 'Economic Depreciation Rate': 'delta'}, axis=1, inplace=True)
+        depr1.rename({'Code': 'asset', 'Economic Depreciation Rate': 'delta'},
+                     axis=1, inplace=True)
         depr1.set_index('asset', inplace=True)
         self.deltas = copy.deepcopy(depr1)
         

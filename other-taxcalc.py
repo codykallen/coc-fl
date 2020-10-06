@@ -43,20 +43,25 @@ def DonutFacts(calc):
     gross_was_p = calc.array('e00200p') + calc.array('pencon_p')
     gross_was_s = calc.array('e00200s') + calc.array('pencon_s')
     # Self-employment income
-    sey_p = calc.array('e00900p') + calc.array('e02100p') + calc.array('k1bx14p')
-    sey_s = calc.array('e00900s') + calc.array('e02100s') + calc.array('k1bx14s')
+    sey_p = (calc.array('e00900p') + calc.array('e02100p') +
+             calc.array('k1bx14p'))
+    sey_s = (calc.array('e00900s') + calc.array('e02100s') +
+             calc.array('k1bx14s'))
     # Amount of income subject to donut hole
     sey_frac = 1.0 - 0.5 * calc.policy_param('FICA_ss_trt')
     was_plus_sey_p = gross_was_p + np.maximum(0., sey_p * sey_frac)
     was_plus_sey_s = gross_was_s + np.maximum(0., sey_s * sey_frac)
-    donuthit_p = np.maximum(0., was_plus_sey_p - calc.policy_param('SS_Earnings_thd'))
-    donuthit_s = np.maximum(0., was_plus_sey_s - calc.policy_param('SS_Earnings_thd'))
+    donuthit_p = np.maximum(0., was_plus_sey_p -
+                            calc.policy_param('SS_Earnings_thd'))
+    donuthit_s = np.maximum(0., was_plus_sey_s -
+                            calc.policy_param('SS_Earnings_thd'))
     w2_p_over = np.minimum(donuthit_p, gross_was_p)
     w2_s_over = np.minimum(donuthit_s, gross_was_s)
     sey_p_over = np.maximum(np.minimum(donuthit_p, sey_p), 0.)
     sey_s_over = np.maximum(np.minimum(donuthit_s, sey_s), 0.)
     # Indicators
-    scorp = calc.array('e26270') - calc.array('k1bx14p') - calc.array('k1bx14s')
+    scorp = (calc.array('e26270') - calc.array('k1bx14p') -
+             calc.array('k1bx14s'))
     employee_p = np.where(gross_was_p > 0, 1, 0)
     employee_s = np.where(gross_was_s > 0, 1, 0)
     entrepreneur_p = np.where(sey_p + scorp != 0.0, 1, 0)
@@ -64,13 +69,22 @@ def DonutFacts(calc):
     affected_p = np.where(donuthit_p > 0, 1, 0)
     affected_s = np.where(donuthit_s > 0, 1, 0)
     # Share of employees affected
-    stat1 = sum((employee_p * affected_p + employee_s * affected_s) * wgt) / sum((employee_p + employee_s) * wgt)
+    stat1 = (sum((employee_p * affected_p +
+                  employee_s * affected_s) * wgt) /
+             sum((employee_p + employee_s) * wgt))
     # Share of W2 income affected
-    stat2 = sum((employee_p * affected_p * w2_p_over + employee_s * affected_s * w2_s_over) * wgt) / sum((employee_p * gross_was_p + employee_s * gross_was_s) * wgt)
+    stat2 = (sum((employee_p * affected_p * w2_p_over +
+                  employee_s * affected_s * w2_s_over) * wgt) /
+             sum((employee_p * gross_was_p + employee_s * gross_was_s) * wgt))
     # Share of entrepreneurs affected
-    stat3 = sum((entrepreneur_p * affected_p + entrepreneur_s * affected_s) * wgt) / sum((entrepreneur_p + entrepreneur_s) * wgt)
+    stat3 = (sum((entrepreneur_p * affected_p +
+                  entrepreneur_s * affected_s) * wgt) /
+             sum((entrepreneur_p + entrepreneur_s) * wgt))
     # Share of entrepreneur income affected
-    stat4 = sum((entrepreneur_p * affected_p * sey_p_over + entrepreneur_s * affected_s * sey_s_over) * wgt) / sum((entrepreneur_p * (sey_p + scorp) + entrepreneur_s * sey_s) * wgt)
+    stat4 = (sum((entrepreneur_p * affected_p * sey_p_over +
+                  entrepreneur_s * affected_s * sey_s_over) * wgt) /
+             sum((entrepreneur_p * (sey_p + scorp) +
+                  entrepreneur_s * sey_s) * wgt))
     return (stat1, stat2, stat3, stat4)
 
 def interestingComparison(calc1, calc2):
@@ -128,7 +142,10 @@ for i in range(10):
     calc_biden.increment_year()
     calc_biden.calc_all()
     (emp_af[i], wsi_af[i], ent_af[i], pti_af[i]) = DonutFacts(calc_biden)
-    (all_hike1[i], all_hike2[i], pt_hike1[i], pt_hike2[i]) = interestingComparison(calc_extII, calc_biden)
+    (all_hike1[i],
+     all_hike2[i],
+     pt_hike1[i],
+     pt_hike2[i]) = interestingComparison(calc_extII, calc_biden)
     
 df1 = pd.DataFrame({'Year': range(2021, 2031),
                     'Employees': emp_af, 'W2 income': wsi_af,

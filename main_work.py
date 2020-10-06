@@ -22,26 +22,26 @@ parmdict = {'forwardLooking': True}
 
 # Current law
 pol_clbase = Policy()
-parm_clbase = Parameter()
-#parm_clbase = Parameter(parmdict)
+#parm_clbase = Parameter()
+parm_clbase = Parameter(parmdict)
 calc_clbase = Calculator(parm_clbase, pol_clbase)
 
 # Extension of individual income tax parameters
 pol_extII = Policy('policy_extendII.csv')
-parm_extII = Parameter()
-#parm_extII = Parameter(parmdict)
+#parm_extII = Parameter()
+parm_extII = Parameter(parmdict)
 calc_extII = Calculator(parm_extII, pol_extII)
 
 # Extension of all current TCJA tax parameters (current policy baseline)
 pol_cpbase = Policy('policy_currentPolicy.csv')
-parm_cpbase = Parameter()
-#parm_cpbase = Parameter(parmdict)
+#parm_cpbase = Parameter()
+parm_cpbase = Parameter(parmdict)
 calc_cpbase = Calculator(parm_cpbase, pol_cpbase)
 
 # Biden tax plan
 pol_biden = Policy('policy_biden.csv')
-parm_biden = Parameter()
-#parm_biden = Parameter(parmdict)
+#parm_biden = Parameter()
+parm_biden = Parameter(parmdict)
 calc_biden = Calculator(parm_biden, pol_biden)
 
 

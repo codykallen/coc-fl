@@ -14,7 +14,8 @@ class Policy():
         ccrfile = pd.ExcelFile('CCR_rules.xlsx')
         ccrRules = dict()
         for year in range(2020, 2030):
-            ccr1 = pd.read_excel(ccrfile, sheet_name=self.policies.loc[year, 'ccr_sheet'])
+            sheetname = self.policies.loc[year, 'ccr_sheet']
+            ccr1 = pd.read_excel(ccrfile, sheet_name=sheetname)
             ccr1.rename({'Asset code': 'asset'}, axis=1, inplace=True)
             ccrRules[str(year)] = ccr1.set_index('asset')
         ccr2 = pd.read_excel(ccrfile, sheet_name='foreign')

@@ -33,11 +33,11 @@ class Calculator():
         calc_all_* function.
         """
         if self.parm.forwardLooking:
-            self.calc_all_forward(year)
+            self._calc_all_forward(year)
         else:
-            self.calc_all_basic(year)
+            self._calc_all_basic(year)
     
-    def calc_all_basic(self, year):
+    def _calc_all_basic(self, year):
         """
         Calculate cost of capital by asset type, industry and firm type.
         Takes naive view that present tax rates persist indefinitely.
@@ -123,7 +123,8 @@ class Calculator():
                                           drules.loc[ast, 'itc_life'],
                                           s179_c, drules.loc[ast, 'bonus'],
                                           drules.loc[ast, 'life'],
-                                          drules.loc[ast, 'acclrt'], tau_prop_c2)
+                                          drules.loc[ast, 'acclrt'],
+                                          tau_prop_c2)
                 coc_scorp[i,j] = calcCOC1(r_nc, self.parm.pi, self.parm.rd,
                                           delta, Delta_nc, tau_sc, phi_nc,
                                           drules.loc[ast, 'method'],
@@ -132,7 +133,8 @@ class Calculator():
                                           drules.loc[ast, 'itc_life'],
                                           s179_nc, drules.loc[ast, 'bonus'],
                                           drules.loc[ast, 'life'],
-                                          drules.loc[ast, 'acclrt'], tau_prop_sc2)
+                                          drules.loc[ast, 'acclrt'],
+                                          tau_prop_sc2)
                 coc_soleprop[i,j] = calcCOC1(r_nc, self.parm.pi, self.parm.rd,
                                              delta, Delta_nc, tau_sp, phi_nc,
                                              drules.loc[ast, 'method'],
@@ -141,7 +143,8 @@ class Calculator():
                                              drules.loc[ast, 'itc_life'],
                                              s179_nc, drules.loc[ast, 'bonus'],
                                              drules.loc[ast, 'life'],
-                                             drules.loc[ast, 'acclrt'], tau_prop_sp2)
+                                             drules.loc[ast, 'acclrt'],
+                                             tau_prop_sp2)
                 coc_partner[i,j] = calcCOC1(r_nc, self.parm.pi, self.parm.rd,
                                             delta, Delta_nc, tau_p, phi_nc,
                                             drules.loc[ast, 'method'],
@@ -150,12 +153,17 @@ class Calculator():
                                             drules.loc[ast, 'itc_life'],
                                             s179_nc, drules.loc[ast, 'bonus'],
                                             drules.loc[ast, 'life'],
-                                            drules.loc[ast, 'acclrt'], tau_prop_p2)
+                                            drules.loc[ast, 'acclrt'],
+                                            tau_prop_p2)
                 # Compute METRs
-                metr_ccorp[i,j] = (coc_ccorp[i,j] - r_c + self.parm.pi) / coc_ccorp[i,j]
-                metr_scorp[i,j] = (coc_scorp[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
-                metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
-                metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
+                metr_ccorp[i,j] = ((coc_ccorp[i,j] - r_c + self.parm.pi) /
+                                   coc_ccorp[i,j])
+                metr_scorp[i,j] = ((coc_scorp[i,j] - r_nc + self.parm.pi) /
+                                   coc_ccorp[i,j])
+                metr_soleprop[i,j] = ((coc_soleprop[i,j] - r_nc + self.parm.pi) /
+                                      coc_ccorp[i,j])
+                metr_partner[i,j] = ((coc_partner[i,j] - r_nc + self.parm.pi) /
+                                     coc_ccorp[i,j])
                 # Compute user cost of capital
                 ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
@@ -176,8 +184,8 @@ class Calculator():
                 s_c = calcSc(self.parm.rd, self.parm.re, self.parm.pi, Delta_c,
                              self.parm.shares, taxrt_int, taxrt_div, taxrt_scg,
                              taxrt_lcg, self.pol.fetch('stepup', year))
-                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi, Delta_nc,
-                               self.parm.shares, taxrt_int)
+                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi,
+                               Delta_nc, self.parm.shares, taxrt_int)
                 # Compute METTRs
                 mettr_ccorp[i,j] = (coc_ccorp[i,j] - s_c) / coc_ccorp[i,j]
                 mettr_scorp[i,j] = (coc_scorp[i,j] - s_nc) / coc_scorp[i,j]
@@ -197,8 +205,9 @@ class Calculator():
                                            drulesf.loc[ast, 'itc_life'],
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
-                                           drulesf.loc[ast, 'acclrt'], tau_prop_c2)
-                eatr_for[i,j ] = calcEATRf1(r_c, self.parm.pi, self.parm.rd,
+                                           drulesf.loc[ast, 'acclrt'],
+                                           tau_prop_c2)
+                eatr_for[i,j] = calcEATRf1(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, tau_c,
                                            GILTIrt, tang, self.parm.p, tauf,
                                            drulesf.loc[ast, 'method'],
@@ -207,7 +216,8 @@ class Calculator():
                                            drulesf.loc[ast, 'itc_life'],
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
-                                           drulesf.loc[ast, 'acclrt'], tau_prop_c2)
+                                           drulesf.loc[ast, 'acclrt'],
+                                           tau_prop_c2)
         print('Calculations complete for ' + str(year))
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
@@ -225,7 +235,7 @@ class Calculator():
         self.results_mettr[str(year)] = results5
         self.calc_all_called = True
         
-    def calc_all_forward(self, year):
+    def _calc_all_forward(self, year):
         """
         Calculate cost of capital by asset type, industry and firm type.
         Uses forward-looking equations for future tax policies.
@@ -251,12 +261,13 @@ class Calculator():
         eatr_dom = np.zeros((ntype, nind))
         eatr_for = np.zeros((ntype, nind))
         # Extract policy parameters for the given year
-        (taulist_c, philist_c) = make_lists(self.pol.policies, 'ccorp', year, length=50)
-        (taulist_sc, philist_nc) = make_lists(self.pol.policies, 'scorp', year, length=50)
-        (taulist_sp, _) = make_lists(self.pol.policies, 'soleprop', year, length=50)
-        (taulist_p, _) = make_lists(self.pol.policies, 'partner', year, length=50)
-        (sublist_i, _) = make_lists(self.pol.policies, 'slti', year, length=50)
-        (sublist_p, _) = make_lists(self.pol.policies, 'sltp', year, length=50)
+        taulist_c = make_lists(self.pol.policies, 'taxrt_ccorp', year, 50)
+        taulist_sc = make_lists(self.pol.policies, 'taxrt_scorp', year, 50)
+        taulist_sp = make_lists(self.pol.policies, 'taxrt_soleprop', year, 50)
+        taulist_p = make_lists(self.pol.policies, 'taxrt_partner', year, 50)
+        philist_c = make_lists(self.pol.policies, 'intded_c', year, 50)
+        philist_nc = make_lists(self.pol.policies, 'intded_nc', year, 50)
+        sublist_i = make_lists(self.pol.policies, 'sub_slti', year, 50)
         drules = self.pol.read_ccr(year)
         drulesf = self.pol.read_ccr('foreign')
         FDIIrt = self.pol.fetch('fdii_ex', year)
@@ -310,7 +321,8 @@ class Calculator():
                                           drules.loc[ast, 'itc_life'],
                                           s179_c, drules.loc[ast, 'bonus'],
                                           drules.loc[ast, 'life'],
-                                          drules.loc[ast, 'acclrt'], taulist_prop_c2, 50)
+                                          drules.loc[ast, 'acclrt'],
+                                          taulist_prop_c2, 50)
                 coc_scorp[i,j] = calcCOC2(r_nc, self.parm.pi, self.parm.rd,
                                           delta, Delta_nc, taulist_sc, philist_nc,
                                           drules.loc[ast, 'method'],
@@ -319,7 +331,8 @@ class Calculator():
                                           drules.loc[ast, 'itc_life'],
                                           s179_nc, drules.loc[ast, 'bonus'],
                                           drules.loc[ast, 'life'],
-                                          drules.loc[ast, 'acclrt'], taulist_prop_sc2, 50)
+                                          drules.loc[ast, 'acclrt'],
+                                          taulist_prop_sc2, 50)
                 coc_soleprop[i,j] = calcCOC2(r_nc, self.parm.pi, self.parm.rd,
                                              delta, Delta_nc, taulist_sp, philist_nc,
                                              drules.loc[ast, 'method'],
@@ -328,7 +341,8 @@ class Calculator():
                                              drules.loc[ast, 'itc_life'],
                                              s179_nc, drules.loc[ast, 'bonus'],
                                              drules.loc[ast, 'life'],
-                                             drules.loc[ast, 'acclrt'], taulist_prop_sp2, 50)
+                                             drules.loc[ast, 'acclrt'],
+                                             taulist_prop_sp2, 50)
                 coc_partner[i,j] = calcCOC2(r_nc, self.parm.pi, self.parm.rd,
                                             delta, Delta_nc, taulist_p, philist_nc,
                                             drules.loc[ast, 'method'],
@@ -337,12 +351,17 @@ class Calculator():
                                             drules.loc[ast, 'itc_life'],
                                             s179_nc, drules.loc[ast, 'bonus'],
                                             drules.loc[ast, 'life'],
-                                            drules.loc[ast, 'acclrt'], taulist_prop_p2, 50)
+                                            drules.loc[ast, 'acclrt'],
+                                            taulist_prop_p2, 50)
                 # Compute METRs
-                metr_ccorp[i,j] = (coc_ccorp[i,j] - r_c + self.parm.pi) / coc_ccorp[i,j]
-                metr_scorp[i,j] = (coc_scorp[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
-                metr_soleprop[i,j] = (coc_soleprop[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
-                metr_partner[i,j] = (coc_partner[i,j] - r_nc + self.parm.pi) / coc_ccorp[i,j]
+                metr_ccorp[i,j] = ((coc_ccorp[i,j] - r_c + self.parm.pi) /
+                                   coc_ccorp[i,j])
+                metr_scorp[i,j] = ((coc_scorp[i,j] - r_nc + self.parm.pi) /
+                                   coc_ccorp[i,j])
+                metr_soleprop[i,j] = ((coc_soleprop[i,j] - r_nc + self.parm.pi) /
+                                      coc_ccorp[i,j])
+                metr_partner[i,j] = ((coc_partner[i,j] - r_nc + self.parm.pi) /
+                                     coc_ccorp[i,j])
                 # Compute user cost of capital
                 ucoc_ccorp[i,j] = coc_ccorp[i,j] + delta
                 ucoc_scorp[i,j] = coc_scorp[i,j] + delta
@@ -363,8 +382,8 @@ class Calculator():
                 s_c = calcSc(self.parm.rd, self.parm.re, self.parm.pi, Delta_c,
                              self.parm.shares, taxrt_int, taxrt_div, taxrt_scg,
                              taxrt_lcg, self.pol.fetch('stepup', year))
-                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi, Delta_nc,
-                               self.parm.shares, taxrt_int)
+                s_nc = calcSnc(self.parm.rd, self.parm.re, self.parm.pi,
+                               Delta_nc, self.parm.shares, taxrt_int)
                 # Compute METTRs
                 mettr_ccorp[i,j] = (coc_ccorp[i,j] - s_c) / coc_ccorp[i,j]
                 mettr_scorp[i,j] = (coc_scorp[i,j] - s_nc) / coc_scorp[i,j]
@@ -384,7 +403,8 @@ class Calculator():
                                            drulesf.loc[ast, 'itc_life'],
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
-                                           drulesf.loc[ast, 'acclrt'], taulist_prop_c2)
+                                           drulesf.loc[ast, 'acclrt'],
+                                           taulist_prop_c2)
                 eatr_for[i,j ] = calcEATRf2(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, taulist_c,
                                            GILTIrt, tang, self.parm.p, tauf,
@@ -394,7 +414,8 @@ class Calculator():
                                            drulesf.loc[ast, 'itc_life'],
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
-                                           drulesf.loc[ast, 'acclrt'], taulist_prop_c2)
+                                           drulesf.loc[ast, 'acclrt'],
+                                           taulist_prop_c2)
         print('Calculations complete for ' + str(year))
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
