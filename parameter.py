@@ -12,8 +12,10 @@ class Parameter():
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
+    def __init__(self, altparms=None):
         self.set_chosen_parms()
+        if altparms is not None:
+            self.update_parms(altparms)
         self.read_depr()
         self.read_debt()
         self.read_sec179()
@@ -35,6 +37,8 @@ class Parameter():
         self.rd = self.rf + self.premD
         # Required return on equity
         self.re = self.rf + self.premE
+        # Income rate including supernormal returns
+        self.p = 0.2
         # Set shares for distribution of of investment income
         self.shares = {'txshr_d_c': 0.523, # taxable share of corporate debt
                        'txshr_d_nc': 0.763, # taxable share of pass-through debt
@@ -52,6 +56,50 @@ class Parameter():
                         'property': 0.0125, 'corp': 0.05}
         # Bool for whether to include state and local taxes
         self.include_slt = True
+        # Bool for whether equations are forward-looking
+        self.forwardLooking = False
+    
+    def update_parms(self, pdict):
+        """
+        Function to update certain parameters.
+        """
+        # Check that pdict is acceptable.
+        assert type(pdict) is dict
+        for parm in pdict:
+            assert parm in ['rf', 'pi', 'premD', 'premE', 'rd', 're', 'p',
+                            'shares', 'sltaxes',
+                            'include_slt', 'forwardLooking']
+        # Check values and update baseic economic parameters
+        if 'rf' in pdict:
+            assert pdict['rf'] > 0
+            self.rf = pdict['rf']
+        if 'pi' in pdict:
+            assert pdict['pi'] > -self.rf
+            self.pi = pdict['pi']
+        if 'premD' in pdict:
+            assert pdict['premD'] > 0
+            self.premD = pdict['premD']
+            self.rd = self.rf + self.premD
+        if 'premE' in pdict:
+            assert pdict['premE'] > 0
+            self.premE = pdict['premE']
+        if 'rd' in pdict:
+            assert pdict['rd'] > 0
+            self.rd = pdict['rd']
+        if 're' in pdict:
+            assert pdict['re'] > 0
+            self.re = pdict['re']
+        if 'p' in pdict:
+            assert pdict['p'] > 0
+            self.p = pdict['p']
+        # Update assumptions for equation style
+        if 'include_slt' in pdict:
+            assert type(pdict['include_slt']) is bool
+            self.include_slt = pdict['include_slt']
+        if 'forwardLooking' in pdict:
+            assert type(pdict['forwardLooking']) is bool
+            self.forwardLooking = pdict['forwardLooking']
+        
         
     def read_depr(self):
         """

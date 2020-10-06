@@ -28,6 +28,16 @@ class Calculator():
         self.results_international = dict()
         self.results_mettr = dict()
     
+    def calc_all(self, year):
+        """
+        Checks what type of equations to use, and calls the relevant
+        calc_all_* function.
+        """
+        if self.parm.forwardLooking:
+            self.calc_all_forward(year)
+        else:
+            self.calc_all_basic(year)
+    
     def calc_all_basic(self, year):
         """
         Calculate cost of capital by asset type, industry and firm type.
@@ -180,7 +190,7 @@ class Calculator():
                     tang = 1
                 eatr_dom[i,j] = calcEATRd1(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, tau_c, phi_c,
-                                           FDIIrt, tang, 0.2,
+                                           FDIIrt, tang, self.parm.p,
                                            drulesf.loc[ast, 'method'],
                                            drulesf.loc[ast, 'itcrt'],
                                            drulesf.loc[ast, 'itc_base'],
@@ -190,7 +200,7 @@ class Calculator():
                                            drulesf.loc[ast, 'acclrt'], tau_prop_c2)
                 eatr_for[i,j ] = calcEATRf1(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, tau_c,
-                                           GILTIrt, tang, 0.2, tauf,
+                                           GILTIrt, tang, self.parm.p, tauf,
                                            drulesf.loc[ast, 'method'],
                                            drulesf.loc[ast, 'itcrt'],
                                            drulesf.loc[ast, 'itc_base'],
@@ -198,7 +208,7 @@ class Calculator():
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
                                            drulesf.loc[ast, 'acclrt'], tau_prop_c2)
-        print('Cost of capital calculations complete')
+        print('Calculations complete for ' + str(year))
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
         self.results_coc[str(year)] = results1
@@ -367,7 +377,7 @@ class Calculator():
                     tang = 1
                 eatr_dom[i,j] = calcEATRd2(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, taulist_c, philist_c,
-                                           FDIIrt, tang, 0.2,
+                                           FDIIrt, tang, self.parm.p,
                                            drulesf.loc[ast, 'method'],
                                            drulesf.loc[ast, 'itcrt'],
                                            drulesf.loc[ast, 'itc_base'],
@@ -377,7 +387,7 @@ class Calculator():
                                            drulesf.loc[ast, 'acclrt'], taulist_prop_c2)
                 eatr_for[i,j ] = calcEATRf2(r_c, self.parm.pi, self.parm.rd,
                                            delta, Delta_c, taulist_c,
-                                           GILTIrt, tang, 0.2, tauf,
+                                           GILTIrt, tang, self.parm.p, tauf,
                                            drulesf.loc[ast, 'method'],
                                            drulesf.loc[ast, 'itcrt'],
                                            drulesf.loc[ast, 'itc_base'],
@@ -385,7 +395,7 @@ class Calculator():
                                            0.0, drules.loc[ast, 'bonus'],
                                            drulesf.loc[ast, 'life'],
                                            drulesf.loc[ast, 'acclrt'], taulist_prop_c2)
-        print('Cost of capital calculations complete')
+        print('Calculations complete for ' + str(year))
         results1 = {'corp': coc_ccorp, 'scorp': coc_scorp,
                     'soleprop': coc_soleprop, 'partner': coc_partner}
         self.results_coc[str(year)] = results1
