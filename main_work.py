@@ -21,43 +21,36 @@ Note: Before running the following, make sure to execute the code in
       income using mtr_taxcalc.py.
 """
 
-# Whether to look forward or to use naive equations
-eqstyle = 'naive'
-assert eqstyle in ['naive', 'forward']
+parmdict = {'forwardLooking': True}
 
 # Current law
 pol_clbase = Policy()
-parm_clbase = Parameter()
+parm_clbase = Parameter(parmdict)
 calc_clbase = Calculator(parm_clbase, pol_clbase)
 
 # Extension of individual income tax parameters
 pol_extII = Policy('policy_extendII.csv')
-parm_extII = Parameter()
+parm_extII = Parameter(parmdict)
 calc_extII = Calculator(parm_extII, pol_extII)
 
 # Extension of all current TCJA tax parameters (current policy baseline)
 pol_cpbase = Policy('policy_currentPolicy.csv')
-parm_cpbase = Parameter()
+parm_cpbase = Parameter(parmdict)
 calc_cpbase = Calculator(parm_cpbase, pol_cpbase)
 
 # Biden tax plan
 pol_biden = Policy('policy_biden.csv')
-parm_biden = Parameter()
+parm_biden = Parameter(parmdict)
 calc_biden = Calculator(parm_biden, pol_biden)
 
 
 # Calculate results for year year
 for year in range(2021, 2030):
-    if eqstyle == 'naive':
-        calc_clbase.calc_all_basic(year)
-        calc_extII.calc_all_basic(year)
-        calc_cpbase.calc_all_basic(year)
-        calc_biden.calc_all_basic(year)
-    else:
-        calc_clbase.calc_all_forward(year)
-        calc_extII.calc_all_forward(year)
-        calc_cpbase.calc_all_forward(year)
-        calc_biden.calc_all_forward(year)
+    calc_clbase.calc_all(year)
+    calc_extII.calc_all(year)
+    calc_cpbase.calc_all(year)
+    calc_biden.calc_all(year)
+
 
 # Create objects to store results
 ob_clbase = OutputBuilder(calc_clbase, 'clbase')
@@ -141,30 +134,30 @@ for year in range(2021, 2030):
         print('Biden StD: ', ob_biden.cocVariation(year))
 
 # Save results to tables for combining later
-main_coc_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'clbase' + '.csv', index=False)
-main_coc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'extII' + '.csv', index=False)
-main_coc_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'cpbase' + '.csv', index=False)
-main_coc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_coc_' + 'biden' + '.csv', index=False)
-main_mtr_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'clbase' + '.csv', index=False)
-main_mtr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'extII' + '.csv', index=False)
-main_mtr_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'cpbase' + '.csv', index=False)
-main_mtr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mtr_' + 'biden' + '.csv', index=False)
-main_mettr_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'clbase' + '.csv', index=False)
-main_mettr_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'extII' + '.csv', index=False)
-main_mettr_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'cpbase' + '.csv', index=False)
-main_mettr_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_mettr_' + 'biden' + '.csv', index=False)
-main_ucoc_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'clbase' + '.csv', index=False)
-main_ucoc_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'extII' + '.csv', index=False)
-main_ucoc_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'cpbase' + '.csv', index=False)
-main_ucoc_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_ucoc_' + 'biden' + '.csv', index=False)
-main_eatrd_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'clbase' + '.csv', index=False)
-main_eatrd_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'extII' + '.csv', index=False)
-main_eatrd_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'cpbase' + '.csv', index=False)
-main_eatrd_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrd_' + 'biden' + '.csv', index=False)
-main_eatrf_clbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'clbase' + '.csv', index=False)
-main_eatrf_extII.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'extII' + '.csv', index=False)
-main_eatrf_cpbase.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'cpbase' + '.csv', index=False)
-main_eatrf_biden.to_csv(OUTPUTPATH + 'main/' + eqstyle + '_eatrf_' + 'biden' + '.csv', index=False)
+main_coc_clbase.to_csv(OUTPUTPATH + 'main/' + 'coc_' + 'clbase' + '.csv', index=False)
+main_coc_extII.to_csv(OUTPUTPATH + 'main/' + 'coc_' + 'extII' + '.csv', index=False)
+main_coc_cpbase.to_csv(OUTPUTPATH + 'main/' + 'coc_' + 'cpbase' + '.csv', index=False)
+main_coc_biden.to_csv(OUTPUTPATH + 'main/' + 'coc_' + 'biden' + '.csv', index=False)
+main_mtr_clbase.to_csv(OUTPUTPATH + 'main/' + 'mtr_' + 'clbase' + '.csv', index=False)
+main_mtr_extII.to_csv(OUTPUTPATH + 'main/' + 'mtr_' + 'extII' + '.csv', index=False)
+main_mtr_cpbase.to_csv(OUTPUTPATH + 'main/' + 'mtr_' + 'cpbase' + '.csv', index=False)
+main_mtr_biden.to_csv(OUTPUTPATH + 'main/' + 'mtr_' + 'biden' + '.csv', index=False)
+main_mettr_clbase.to_csv(OUTPUTPATH + 'main/' + 'mettr_' + 'clbase' + '.csv', index=False)
+main_mettr_extII.to_csv(OUTPUTPATH + 'main/' + 'mettr_' + 'extII' + '.csv', index=False)
+main_mettr_cpbase.to_csv(OUTPUTPATH + 'main/' + 'mettr_' + 'cpbase' + '.csv', index=False)
+main_mettr_biden.to_csv(OUTPUTPATH + 'main/' + 'mettr_' + 'biden' + '.csv', index=False)
+main_ucoc_clbase.to_csv(OUTPUTPATH + 'main/' + 'ucoc_' + 'clbase' + '.csv', index=False)
+main_ucoc_extII.to_csv(OUTPUTPATH + 'main/' + 'ucoc_' + 'extII' + '.csv', index=False)
+main_ucoc_cpbase.to_csv(OUTPUTPATH + 'main/' + 'ucoc_' + 'cpbase' + '.csv', index=False)
+main_ucoc_biden.to_csv(OUTPUTPATH + 'main/' + 'ucoc_' + 'biden' + '.csv', index=False)
+main_eatrd_clbase.to_csv(OUTPUTPATH + 'main/' + 'eatrd_' + 'clbase' + '.csv', index=False)
+main_eatrd_extII.to_csv(OUTPUTPATH + 'main/' + 'eatrd_' + 'extII' + '.csv', index=False)
+main_eatrd_cpbase.to_csv(OUTPUTPATH + 'main/' + 'eatrd_' + 'cpbase' + '.csv', index=False)
+main_eatrd_biden.to_csv(OUTPUTPATH + 'main/' + 'eatrd_' + 'biden' + '.csv', index=False)
+main_eatrf_clbase.to_csv(OUTPUTPATH + 'main/' + 'eatrf_' + 'clbase' + '.csv', index=False)
+main_eatrf_extII.to_csv(OUTPUTPATH + 'main/' + 'eatrf_' + 'extII' + '.csv', index=False)
+main_eatrf_cpbase.to_csv(OUTPUTPATH + 'main/' + 'eatrf_' + 'cpbase' + '.csv', index=False)
+main_eatrf_biden.to_csv(OUTPUTPATH + 'main/' + 'eatrf_' + 'biden' + '.csv', index=False)
 
 
 
