@@ -45,6 +45,13 @@ class Parameter():
                        'h_lcg': 10.0, # holding period for long-term gains
                        'h_xcg': 30.0} # holding period for gains held until death
         assert self.shares['wt_scg'] + self.shares['wt_lcg'] <= 1.0
+        # Set state-level tax rates
+        self.sltaxes = {'int': 0.0413, 'ndiv': 0.0421, 'qdiv': 0.0479,
+                        'scg': 0.0457, 'lcg': 0.0467,
+                        'soleprop': 0.0389, 'partner': 0.0497,
+                        'property': 0.0125, 'corp': 0.05}
+        # Bool for whether to include state and local taxes
+        self.include_slt = True
         
     def read_depr(self):
         """
