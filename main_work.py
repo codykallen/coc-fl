@@ -22,31 +22,28 @@ parmdict = {'forwardLooking': True}
 
 # Current law
 pol_clbase = Policy()
-#parm_clbase = Parameter()
 parm_clbase = Parameter(parmdict)
 calc_clbase = Calculator(parm_clbase, pol_clbase)
 
 # Extension of individual income tax parameters
 pol_extII = Policy('policy_extendII.csv')
-#parm_extII = Parameter()
 parm_extII = Parameter(parmdict)
 calc_extII = Calculator(parm_extII, pol_extII)
 
 # Extension of all current TCJA tax parameters (current policy baseline)
 pol_cpbase = Policy('policy_currentPolicy.csv')
-#parm_cpbase = Parameter()
 parm_cpbase = Parameter(parmdict)
 calc_cpbase = Calculator(parm_cpbase, pol_cpbase)
 
 # Biden tax plan
 pol_biden = Policy('policy_biden.csv')
-#parm_biden = Parameter()
 parm_biden = Parameter(parmdict)
 calc_biden = Calculator(parm_biden, pol_biden)
 
 
 # Calculate results for year year
-for year in range(2021, 2030):
+yearlist = [*range(2021, 2023)]
+for year in yearlist:
     calc_clbase.calc_all(year)
     calc_extII.calc_all(year)
     calc_cpbase.calc_all(year)
@@ -67,11 +64,22 @@ ob_cpbase.store_raw(2021)
 ob_biden.store_raw(2021)
 
 
+# Store tabulations by industry and by asset type
+ob_clbase.tabulate_industry(2021)
+ob_extII.tabulate_industry(2021)
+ob_cpbase.tabulate_industry(2021)
+ob_biden.tabulate_industry(2021)
+ob_clbase.tabulate_asset(2021)
+ob_extII.tabulate_asset(2021)
+ob_cpbase.tabulate_asset(2021)
+ob_biden.tabulate_asset(2021)
+
+
 # Tabulate main results for every year 2021-2029
-ob_clbase.tabulate_main_multiyear(range(2021, 2030))
-ob_extII.tabulate_main_multiyear(range(2021, 2030))
-ob_cpbase.tabulate_main_multiyear(range(2021, 2030))
-ob_biden.tabulate_main_multiyear(range(2021, 2030))
+ob_clbase.tabulate_main_multiyear(yearlist)
+ob_extII.tabulate_main_multiyear(yearlist)
+ob_cpbase.tabulate_main_multiyear(yearlist)
+ob_biden.tabulate_main_multiyear(yearlist)
 
 
 # Print standard deviation of cost of capital for select years

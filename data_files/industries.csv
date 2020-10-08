@@ -1,0 +1,63 @@
+indcode,industry name
+110C,Farms
+113F,"Forestry, etc"
+2110,Mining - oil & gas
+2120,Mining - except oil and gas
+2130,Mining support activities
+2200,Utilities
+2300,Construction
+3210,Wood products
+3270,Nonmetallic mineral products
+3310,Primary metals
+3320,Fabricated metal products
+3330,Machinary
+3340,Computer & electronic products
+3350,"Electrical equipment, appliances & components"
+336M,Motor vehicles & parts
+336O,Other transportation equipment
+3370,Furniture & related
+338A,Misc manufacturing
+311A,"Food, beverage and tobacco"
+313T,Textiles
+315A,Apparel & leather
+3220,Paper products
+3230,Print and related
+3240,Petroleum & coal products
+3250,Chemical products
+3260,Plastic & rubber products
+4200,Wholesale trade
+44RT,Retail trade
+4810,Air trans
+4820,Rail trans
+4830,Water trans
+4840,Truck trans
+4850,Transit
+4860,Pipeline trans
+487S,Other transportation equipment
+4930,Warehousing
+5110,Publishing
+5120,Motion picture & recording
+5130,Broadcasting & telecoms
+5140,Info & data processing
+5250,"Funds, trusts, etc."
+5220,Credit intermediation
+5230,Securities & investments
+5240,Insurance
+5310,Real estate
+5320,Rental & leasing
+5411,Legal services
+5415,Computer services
+5412,Misc professional services
+5500,Management of companies
+5610,Administrative & support services
+5620,Waste management & remediation services
+6100,Education
+6210,Ambulatory health care
+622H,Hospitals
+6230,Nursing & residential care
+6240,Social assistance
+711A,"Performing arts, etc"
+7130,Amusement & recreation
+7210,Accommodation
+7220,Food & drink services
+8100,"Other services, except gov't"
