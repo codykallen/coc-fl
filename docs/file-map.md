@@ -23,7 +23,9 @@
  - `JSONs\biden.json`: JSON reform file of Biden tax provisions for local version of Tax-Calculator.
  - `JSONs\extendII.json`: JSON reform file for extending the TCJA's II tax provisions, for local version of Tax-Calculator.
 
-## Other folders and files
+## Other folders
  - `data_files\`: Raw data files used for the model.
  - `tcLocal\`: Local version of Tax-Calculator, modified for more MTR variables and to allow new Biden provisions.
- - `Appendix-CoC.pdf`: Methodological appendix from Fitzgerald, Hassett, Kallen and Mulligan (2020).
+ - `docs\Appendix-CoC.pdf`: Methodological appendix from Fitzgerald, Hassett, Kallen and Mulligan (2020).
+ - `docs\policy-variables.md`: Descriptions of policy variables.
+ - `docs\user-guide.md`: Guide to using `coc-fl`.

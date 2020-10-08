@@ -12395,7 +12395,7 @@
     },
     "PT_qbid_prt": {
         "title": "QBID phase-out rate",
-        "description": "QBID phases out at this rate on taxable income in excess of PT_qbid_pthd.",
+        "description": "QBID phases out at this rate on taxable income in excess of PT_qbid_ps.",
         "notes": "",
         "section_1": "Personal Income",
         "section_2": "Pass-Through",
