@@ -1,7 +1,8 @@
 import copy
 import numpy as np
 import pandas as pd
-from config import OUTPUTPATH, ast_codes, ind_codes, catlist, ntype, nind
+from config import (INPUTPATH, OUTPUTPATH, ast_codes, ind_codes,
+                    catlist, ntype, nind)
 
 class OutputBuilder():
     """
@@ -10,7 +11,7 @@ class OutputBuilder():
     Saves results and tabulates (to be done).
     """
 
-    def __init__(self, calc, key):
+    def __init__(self, calc, key, weighting='stock'):
         """
             parm: Parameter class object
             pol: Policy class object
@@ -19,6 +20,11 @@ class OutputBuilder():
         assert calc.calc_all_called
         self.calc = copy.deepcopy(calc)
         # Read in asset data
+        if weighting is not None:
+            assert weighting in ['stock', 'investment']
+            self.weighting = weighting
+        else:
+            self.weighting = 'stock'
         self.read_assets()
         assert type(key) is str
         self.key = key
@@ -27,13 +33,17 @@ class OutputBuilder():
         """
         Read in asset data by asset type, industry and firm type.
         """
-        self.stock_ccorp = pd.read_csv(OUTPUTPATH + 'capital/stock_ccorp.csv',
+        if self.weighting == 'stock':
+            fpath = OUTPUTPATH + 'capital/stock_'
+        else:
+            fpath = OUTPUTPATH + 'capital/inv_'
+        self.stock_ccorp = pd.read_csv(fpath + 'ccorp.csv',
                                        index_col='asset').fillna(value = 0)
-        self.stock_scorp = pd.read_csv(OUTPUTPATH + 'capital/stock_scorp.csv',
+        self.stock_scorp = pd.read_csv(fpath + 'scorp.csv',
                                        index_col='asset').fillna(value = 0)
-        self.stock_soleprop = pd.read_csv(OUTPUTPATH + 'capital/stock_soleprop.csv',
+        self.stock_soleprop = pd.read_csv(fpath + 'soleprop.csv',
                                           index_col='asset').fillna(value = 0)
-        self.stock_partner = pd.read_csv(OUTPUTPATH + 'capital/stock_partner.csv',
+        self.stock_partner = pd.read_csv(fpath + 'partner.csv',
                                          index_col='asset').fillna(value = 0)
     
     def store_raw(self, year):
@@ -71,28 +81,147 @@ class OutputBuilder():
     
     def tabulate_industry(self, year):
         """
-        Compute weighted average cost of capital and METR by industry
+        Compute weighted averags of various measures by industry
         for the given year.
         """
-        return None
+        assert str(year) in list(self.calc.results_coc)
+        # Extract asset weights
+        stock_ccorp_arr = self.stock_ccorp.to_numpy()
+        stock_scorp_arr = self.stock_scorp.to_numpy()
+        stock_soleprop_arr = self.stock_soleprop.to_numpy()
+        stock_partner_arr = self.stock_partner.to_numpy()
+        # Extract results by firm type
+        coc_ccorp = self.calc.results_coc[str(year)]['corp']
+        coc_scorp = self.calc.results_coc[str(year)]['scorp']
+        coc_soleprop = self.calc.results_coc[str(year)]['soleprop']
+        coc_partner = self.calc.results_coc[str(year)]['partner']
+        mtr_ccorp = self.calc.results_metr[str(year)]['corp']
+        mtr_scorp = self.calc.results_metr[str(year)]['scorp']
+        mtr_soleprop = self.calc.results_metr[str(year)]['soleprop']
+        mtr_partner = self.calc.results_metr[str(year)]['partner']
+        mettr_ccorp = self.calc.results_mettr[str(year)]['corp']
+        mettr_scorp = self.calc.results_mettr[str(year)]['scorp']
+        mettr_soleprop = self.calc.results_mettr[str(year)]['soleprop']
+        mettr_partner = self.calc.results_mettr[str(year)]['partner']
+        ucoc_ccorp = self.calc.results_ucoc[str(year)]['corp']
+        ucoc_scorp = self.calc.results_ucoc[str(year)]['scorp']
+        ucoc_soleprop = self.calc.results_ucoc[str(year)]['soleprop']
+        ucoc_partner = self.calc.results_ucoc[str(year)]['partner']
+        # Extract international results
+        eatr_d = self.calc.results_international[str(year)]['domestic']
+        eatr_f = self.calc.results_international[str(year)]['foreign']
+        # Compute and store averages by industry
+        coclist = ((coc_ccorp * stock_ccorp_arr
+                    + coc_scorp * stock_scorp_arr
+                    + coc_soleprop * stock_soleprop_arr
+                    + coc_partner * stock_partner_arr).sum(0)
+                   / (stock_ccorp_arr + stock_scorp_arr
+                      + stock_soleprop_arr + stock_partner_arr).sum(0))
+        mtrlist = ((mtr_ccorp * stock_ccorp_arr
+                    + mtr_scorp * stock_scorp_arr
+                    + mtr_soleprop * stock_soleprop_arr
+                    + mtr_partner * stock_partner_arr).sum(0)
+                   / (stock_ccorp_arr + stock_scorp_arr
+                      + stock_soleprop_arr + stock_partner_arr).sum(0))
+        mettrlist = ((mettr_ccorp * stock_ccorp_arr
+                      + mettr_scorp * stock_scorp_arr
+                      + mettr_soleprop * stock_soleprop_arr
+                      + mettr_partner * stock_partner_arr).sum(0)
+                     / (stock_ccorp_arr + stock_scorp_arr
+                        + stock_soleprop_arr + stock_partner_arr).sum(0))
+        ucoclist = ((ucoc_ccorp * stock_ccorp_arr
+                     + ucoc_scorp * stock_scorp_arr
+                     + ucoc_soleprop * stock_soleprop_arr
+                     + ucoc_partner * stock_partner_arr).sum(0)
+                    / (stock_ccorp_arr + stock_scorp_arr
+                       + stock_soleprop_arr + stock_partner_arr).sum(0))
+        eatrdlist = (eatr_d * stock_ccorp_arr).sum(0)/ stock_ccorp_arr.sum(0)
+        eatrflist = (eatr_f * stock_ccorp_arr).sum(0)/ stock_ccorp_arr.sum(0)
+        # Combine into dataframe and save
+        indnames = pd.read_csv(INPUTPATH + 'industries.csv')
+        data1 = pd.DataFrame({'Industry code': ind_codes,
+                              'Industry': indnames['industry name'],
+                              'Cost of capital': coclist,
+                              'User cost of capital': ucoclist,
+                              'METR': mtrlist, 'METTR': mettrlist,
+                              'Domestic EATR': eatrdlist,
+                              'Foreign EATR': eatrflist})
+        data1.to_csv(OUTPUTPATH + 'raw/' + 'byIndustry_' + self.key + '_'
+                     + str(year) + '.csv', index=False)
     
     def tabulate_asset(self, year):
         """
-        Compute weighted average cost of capital and METR by asset type
+        Compute weighted averages of various measures by asset type
         for the given year.
         """
-        return None
-    
-    def tabulate_firm(self, year):
-        """
-        Compute weighted average cost of capital and METR by firm type
-        for the given year.
-        """
-        return None
+        assert str(year) in list(self.calc.results_coc)
+        # Extract asset weights
+        stock_ccorp_arr = self.stock_ccorp.to_numpy()
+        stock_scorp_arr = self.stock_scorp.to_numpy()
+        stock_soleprop_arr = self.stock_soleprop.to_numpy()
+        stock_partner_arr = self.stock_partner.to_numpy()
+        # Extract results by firm type
+        coc_ccorp = self.calc.results_coc[str(year)]['corp']
+        coc_scorp = self.calc.results_coc[str(year)]['scorp']
+        coc_soleprop = self.calc.results_coc[str(year)]['soleprop']
+        coc_partner = self.calc.results_coc[str(year)]['partner']
+        mtr_ccorp = self.calc.results_metr[str(year)]['corp']
+        mtr_scorp = self.calc.results_metr[str(year)]['scorp']
+        mtr_soleprop = self.calc.results_metr[str(year)]['soleprop']
+        mtr_partner = self.calc.results_metr[str(year)]['partner']
+        mettr_ccorp = self.calc.results_mettr[str(year)]['corp']
+        mettr_scorp = self.calc.results_mettr[str(year)]['scorp']
+        mettr_soleprop = self.calc.results_mettr[str(year)]['soleprop']
+        mettr_partner = self.calc.results_mettr[str(year)]['partner']
+        ucoc_ccorp = self.calc.results_ucoc[str(year)]['corp']
+        ucoc_scorp = self.calc.results_ucoc[str(year)]['scorp']
+        ucoc_soleprop = self.calc.results_ucoc[str(year)]['soleprop']
+        ucoc_partner = self.calc.results_ucoc[str(year)]['partner']
+        # Extract international results
+        eatr_d = self.calc.results_international[str(year)]['domestic']
+        eatr_f = self.calc.results_international[str(year)]['foreign']
+        # Compute and store averages by asset type
+        coclist = ((coc_ccorp * stock_ccorp_arr
+                    + coc_scorp * stock_scorp_arr
+                    + coc_soleprop * stock_soleprop_arr
+                    + coc_partner * stock_partner_arr).sum(1)
+                   / (stock_ccorp_arr + stock_scorp_arr
+                      + stock_soleprop_arr + stock_partner_arr).sum(1))
+        mtrlist = ((mtr_ccorp * stock_ccorp_arr
+                    + mtr_scorp * stock_scorp_arr
+                    + mtr_soleprop * stock_soleprop_arr
+                    + mtr_partner * stock_partner_arr).sum(1)
+                   / (stock_ccorp_arr + stock_scorp_arr
+                      + stock_soleprop_arr + stock_partner_arr).sum(1))
+        mettrlist = ((mettr_ccorp * stock_ccorp_arr
+                      + mettr_scorp * stock_scorp_arr
+                      + mettr_soleprop * stock_soleprop_arr
+                      + mettr_partner * stock_partner_arr).sum(1)
+                     / (stock_ccorp_arr + stock_scorp_arr
+                        + stock_soleprop_arr + stock_partner_arr).sum(1))
+        ucoclist = ((ucoc_ccorp * stock_ccorp_arr
+                     + ucoc_scorp * stock_scorp_arr
+                     + ucoc_soleprop * stock_soleprop_arr
+                     + ucoc_partner * stock_partner_arr).sum(1)
+                    / (stock_ccorp_arr + stock_scorp_arr
+                       + stock_soleprop_arr + stock_partner_arr).sum(1))
+        eatrdlist = (eatr_d * stock_ccorp_arr).sum(1)/ stock_ccorp_arr.sum(1)
+        eatrflist = (eatr_f * stock_ccorp_arr).sum(1)/ stock_ccorp_arr.sum(1)
+        # Combine into dataframe and save
+        astnames = pd.read_csv(INPUTPATH + 'assettypes.csv')
+        data1 = pd.DataFrame({'Asset code': ast_codes,
+                              'Asset': astnames['asset name'],
+                              'Cost of capital': coclist,
+                              'User cost of capital': ucoclist,
+                              'METR': mtrlist, 'METTR': mettrlist,
+                              'Domestic EATR': eatrdlist,
+                              'Foreign EATR': eatrflist})
+        data1.to_csv(OUTPUTPATH + 'raw/' + 'byAssetType_' + self.key + '_'
+                     + str(year) + '.csv', index=False)
     
     def tabulate_main(self, year):
         """
-        Compute weighted average cost of capital and METR for:
+        Compute weighted averages of various measures for:
             All
             C corporations
             S corporations
@@ -373,7 +502,7 @@ class OutputBuilder():
     
     def cocVariation(self, year):
         """
-        Compute coefficient of variation for cost of capital.
+        Compute standard deviation of the cost of capital.
         Note: Must first run tabulate_main(year).
         """
         # Get average CoC

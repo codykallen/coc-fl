@@ -154,7 +154,7 @@ class Parameter():
         """
         Read in foreign tax rates and asset information.
         """
-        ffile = pd.read_csv(INPUTPATH + 'international-by-industry.csv')
+        ffile = pd.read_csv(INPUTPATH + 'BEA/international-by-industry.csv')
         ffile.set_index('indcode', inplace=True)
         self.foreign = copy.deepcopy(ffile)
 
