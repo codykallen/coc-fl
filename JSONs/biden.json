@@ -22,7 +22,7 @@
 // - 0: II_rt*, II_brk*, PT_rt*, PT_brk*
 // - 1: ID_ps, ID_prt
 // - 2: ID_BenefitCap_rt
-// - 3: PT_qbid_pthd, PT_qbid_prt
+// - 3: PT_qbid_ps, PT_qbid_prt
 // - 4: CG_brk3, CG_rt4
 // - 5: EITC_MaxEligAge
 // - 6: SS_Earnings_thd

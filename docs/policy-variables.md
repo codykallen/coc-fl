@@ -9,86 +9,84 @@ This document describes the policy variables available to use. These fall into t
 ## Main business tax variables
 
  - `taxrt_ccorp`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Corporate tax rate
+    - Acceptable values: min 0, max 1
  - `taxrt_scorp`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on S corporation income. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `taxrt_soleprop`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on sole proprietorship income. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `taxrt_partner`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on partnership income. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `intded_c`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Deductible share of corporate interest deductions.
+    - Acceptable values: min 0, max 1
  - `intded_nc`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Deductible share of noncorporate business interest deductions.
+    - Acceptable values: min 0, max 1
  - `gilti_ex`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Share of GILTI income excluded from taxable income.
+    - Acceptable values: min 0, max 1
  - `fdii_ex`: 
-    - Description: 
-    - Acceptable values: 
- - `taxrt_foreign`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Share of FDII income excluded from taxable income.
+    - Acceptable values: min 0, max 1
  - `ccr_sheet`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Sheet name in `CCR_rules.xlsx` with relevant capital cost recovery rules.
+    - Acceptable values: Must be valid sheet name in `CCR_rules.xlsx`.
  - `taxrt_int`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on interest income. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `taxrt_div`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on dividend income. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `taxrt_scg`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on short-term capital gains. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `taxrt_lcg`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average MTR on long-term capital gains. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
  - `stepup`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Indicator for whether unrealized capital gains at death eligible for step-up basis.
+    - Acceptable values: 0 or 1. 0 indicates unrealized capital gains at death are subject to capital gains taxes.
  - `sub_slti`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Weighted average marginal subsidy on state and local taxes paid. Calculted using `mtr-taxcalc.py`.
+    - Acceptable values: min 0, max 1
 
 ## Capital cost recovery rules
 
+All measures are by asset type, using the given BEA asset codes.
+
  - `method`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Method for capital cost recovery (declining balance, straight-line, expensing, economic).
+    - Acceptable values: DB, SL, EXP, ECON
  - `life`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Tax life for depreciation deductions.
+    - Acceptable values: min 0, max 50
  - `acclrt`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Acceleration rate for declining balance depreciation method (not relevant for other methods).
+    - Acceptable values: min 1
  - `bonus`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Bonus depreciation rate.
+    - Acceptable values: min 0, max 1
  - `itc_base`:
-    - Description: 
-    - Acceptable values: 
+    - Description: Reduction in depreciable basis by investment tax credit.
+    - Acceptable values: min 0, max 1
  - `itcrt`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Investment tax credit rate.
+    - Acceptable values: min 0
  - `itc_life`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Length of period over which to claim the R&D tax credit (0 for immediate credit).
+    - Acceptable values: min 0
 
 ## Individual income tax variables
 
+In general, all policy variables and descriptions are available in `tcLocal\policy_current_law.json` and in the [Tax-Calculator documentation](https://pslmodels.github.io/Tax-Calculator/).
+
  - `RetirementSaving_crt`: 
-    - Description: 
-    - Acceptable values: 
- - `PT_qbid_pthd`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: Credit for contributions to retirement savings accounts.
+ - `PT_qbid_ps`: 
+    - Description: QBID phases out above this threshold of taxable income.
  - `PT_qbid_prt`: 
-    - Description: 
-    - Acceptable values: 
+    - Description: QBID phases out at this rate on taxable income in excess of PT_qbid_pthd.
