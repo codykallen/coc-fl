@@ -2,7 +2,7 @@
 
 ## Specifying policy parameters
  - To specify business tax parameters, create a CSV file as in `policy_baseline.csv`
- - The directly controlled business tax parameters are: `taxrt_ccorp`, `intded_c`, `intded_nc1`, `gilti_ex`, `fdii_ex`, `ccr_sheet`, `stepup``. Set these to the desired values.
+ - The directly controlled business tax parameters are: `taxrt_ccorp`, `intded_c`, `intded_nc1`, `gilti_ex`, `fdii_ex`, `ccr_sheet`, `stepup`. Set these to the desired values.
  - The other tax parameters are weighted average marginal tax (or subsidy) rates on different types of income (or state/local taxes), computed using `mtr-taxcalc.py`. Either set these to desired values, or estimate them using `mtr-taxcalc`. For the latter, see below for instructions.
  - Descriptions of each policy parameter are in `docs\policy_variables.md`.
  - In the Python code, create a `Policy()` object using the policy name. For example:
